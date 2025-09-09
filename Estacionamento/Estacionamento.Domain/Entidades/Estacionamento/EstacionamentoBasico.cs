@@ -4,6 +4,7 @@ namespace Estacionamento.Domain.Entidades.Estacionamento
 {
     public class EstacionamentoBasico
     {
+        public EstacionamentoBasico() { }
         public EstacionamentoBasico(DateTime dataAcesso, DateTime dataHoraEntrada, DateTime? dataHoraSaida, Veiculo veiculo)
         {
             DefinirDataAcesso(dataAcesso);

@@ -1,48 +1,54 @@
-﻿using System;
+﻿using Estacionamento.Domain.DomainObjects;
+using System.Collections.Generic;
 
 namespace Estacionamento.Domain.Entidades
 {
-    public class Proprietario
+    public class Proprietario : Entity, IAggregateRoot
     {
-        public Proprietario(string nome, string endereco, string celular, string telefone, int cnh)
+        public Proprietario() { }
+
+        public Proprietario(string nome, string endereco, string celular, string telefone, int cnh) : base()
         {
             DefinirNome(nome);
             DefinirCnh(cnh);
             DefinirEndereco(endereco);
             DefinirCelular(celular);
             DefinirTelefone(telefone);
+
+            Validar();
         }
 
-        public Guid Id { get; private set; }
         public string Nome { get; private set; }
         public long NumeroCarteiraNacionalDeHabilitacao { get; private set; }
         public string Telefone { get; private set; }
         public string Celular { get; private set; }
         public string Endereco { get; private set; }
 
+        public ICollection<Veiculo> Veiculos { get; private set; }
+
         public void DefinirNome(string valor)
         {
-            this.Nome = valor;
+            Nome = valor;
         }
 
         public void DefinirCnh(long valor)
         {
-            this.NumeroCarteiraNacionalDeHabilitacao = valor;
+            NumeroCarteiraNacionalDeHabilitacao = valor;
         }
 
         public void DefinirTelefone(string valor)
         {
-            this.Telefone = valor;
+            Telefone = valor;
         }
 
         public void DefinirCelular(string valor)
         {
-            this.Celular = valor;
+            Celular = valor;
         }
 
         public void DefinirEndereco(string valor)
         {
-            this.Endereco = valor;
+            Endereco = valor;
         }
     }
 }

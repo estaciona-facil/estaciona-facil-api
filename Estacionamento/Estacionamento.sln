@@ -3,13 +3,21 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Estacionamento.Domain", "Estacionamento.Domain\Estacionamento.Domain.csproj", "{294DB3CF-9745-4452-B0CA-52BE1DE8C626}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Estacionamento.Api", "Estacionamento.Api\Estacionamento.Api.csproj", "{2E74C0CF-B103-4F7F-ADD9-914F694DDD7C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Estacionamento.App", "Estacionamento.Console\Estacionamento.App.csproj", "{87D4BCDA-BFB4-4B06-98EE-EA7138F6AA35}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Estacionamento.Domain", "Estacionamento.Domain\Estacionamento.Domain.csproj", "{294DB3CF-9745-4452-B0CA-52BE1DE8C626}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Estacionamento.Data", "Estacionamento.Data\Estacionamento.Data.csproj", "{2EE974E6-B5E0-48BA-B648-B5C76414B401}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Estacionamento.Tests", "Estacionamento.Tests\Estacionamento.Tests.csproj", "{8531A137-04E2-4063-BF18-11AF2C4841BB}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "2 - Estacionamento.Domain", "2 - Estacionamento.Domain", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "3 - Estacionamento.Data", "3 - Estacionamento.Data", "{D8B3EEC5-8FAE-4EE7-A383-E79DC83AEA4A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "4 - Estacionamento.Tests", "4 - Estacionamento.Tests", "{A3C3CA66-EA05-4363-BC7E-D383BB73CFE1}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "1 - Estacionamento.Api", "1 - Estacionamento.Api", "{52B5A784-BC3E-4567-9372-4F52B28FCF48}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +29,18 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2E74C0CF-B103-4F7F-ADD9-914F694DDD7C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2E74C0CF-B103-4F7F-ADD9-914F694DDD7C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2E74C0CF-B103-4F7F-ADD9-914F694DDD7C}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{2E74C0CF-B103-4F7F-ADD9-914F694DDD7C}.Debug|x64.Build.0 = Debug|Any CPU
+		{2E74C0CF-B103-4F7F-ADD9-914F694DDD7C}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{2E74C0CF-B103-4F7F-ADD9-914F694DDD7C}.Debug|x86.Build.0 = Debug|Any CPU
+		{2E74C0CF-B103-4F7F-ADD9-914F694DDD7C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2E74C0CF-B103-4F7F-ADD9-914F694DDD7C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2E74C0CF-B103-4F7F-ADD9-914F694DDD7C}.Release|x64.ActiveCfg = Release|Any CPU
+		{2E74C0CF-B103-4F7F-ADD9-914F694DDD7C}.Release|x64.Build.0 = Release|Any CPU
+		{2E74C0CF-B103-4F7F-ADD9-914F694DDD7C}.Release|x86.ActiveCfg = Release|Any CPU
+		{2E74C0CF-B103-4F7F-ADD9-914F694DDD7C}.Release|x86.Build.0 = Release|Any CPU
 		{294DB3CF-9745-4452-B0CA-52BE1DE8C626}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{294DB3CF-9745-4452-B0CA-52BE1DE8C626}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{294DB3CF-9745-4452-B0CA-52BE1DE8C626}.Debug|x64.ActiveCfg = Debug|Any CPU
@@ -72,6 +92,12 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{2E74C0CF-B103-4F7F-ADD9-914F694DDD7C} = {52B5A784-BC3E-4567-9372-4F52B28FCF48}
+		{294DB3CF-9745-4452-B0CA-52BE1DE8C626} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{2EE974E6-B5E0-48BA-B648-B5C76414B401} = {D8B3EEC5-8FAE-4EE7-A383-E79DC83AEA4A}
+		{8531A137-04E2-4063-BF18-11AF2C4841BB} = {A3C3CA66-EA05-4363-BC7E-D383BB73CFE1}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F93DD13E-2619-4873-905C-1A29FE7D0335}
