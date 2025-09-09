@@ -7,11 +7,17 @@ on:
     branches: [ "main" ]
 
 jobs:
-
   build:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
-    - name: Build the Docker image
-      run: docker build ./src --file Dockerfile --tag my-image-name:$(date +%s)
+      - uses: actions/checkout@v4
+
+      - name: Build with docker-compose
+        run: docker compose -f src/docker-compose.yml build
+
+      - name: Run services
+        run: docker compose -f src/docker-compose.yml up -d
+
+      - name: Show running containers
+        run: docker compose -f src/docker-compose.yml ps

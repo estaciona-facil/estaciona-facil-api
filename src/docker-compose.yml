@@ -19,7 +19,7 @@ services:
     container_name: api
 
     build: 
-      context: ../Estacionamento
+      context: ../src
       dockerfile: ./Dockerfile
 
     ports:
