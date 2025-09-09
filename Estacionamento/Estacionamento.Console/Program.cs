@@ -1,15 +1,15 @@
-﻿using Estacionamento.Domain;
+﻿using Estacionamento.Domain.Entidades;
+using Estacionamento.Domain.Entidades.Estacionamento;
+using Estacionamento.Domain.Exceptions;
 using System;
 using System.Collections.Generic;
-using EstacionamentoModel = Estacionamento.Domain.Estacionamento;
 
 namespace Estacionamento.App
 {
     class Program
     {
         private static List<Veiculo> veiculos = new List<Veiculo>();
-        private static List<Proprietario> proprietarios = new List<Proprietario>();
-        private static List<EstacionamentoModel> acessos = new List<EstacionamentoModel>();
+        private static List<EstacionamentoBasico> acessos = new List<EstacionamentoBasico>();
 
         static void Main(string[] args)
         {
@@ -34,7 +34,7 @@ namespace Estacionamento.App
                 }
             } while (!opcaoEscolhida.Equals("0"));
 
-            Console.WriteLine("Faturamento da sessão: R$ %.2f", EstacionamentoModel.getFaturamento());
+            Console.WriteLine("Faturamento da sessão: R$ %.2f", EstacionamentoBasico.Faturamento);
         }
 
 
@@ -77,8 +77,8 @@ namespace Estacionamento.App
                 return null;
             }
 
-            Proprietario o_Proprietario = new Proprietario(nome, endereco, int.Parse(celular), int.Parse(telefone), int.Parse(cnh));
-            return o_Proprietario;
+            Proprietario proprietario = new Proprietario(nome, endereco, celular, telefone, int.Parse(cnh));
+            return proprietario;
         }
 
         public static void cadastroVeiculo()
@@ -109,7 +109,7 @@ namespace Estacionamento.App
                 return;
             }
 
-            Veiculo o_Veiculo = new Veiculo(marca, modelo, placa);
+            Veiculo veiculo = new Veiculo(marca, modelo, placa);
 
             Console.WriteLine("É veiculo de mensalidade? S/N");
             String resposta = Console.ReadLine().ToUpper();
@@ -119,15 +119,14 @@ namespace Estacionamento.App
                 case "N":
                     break;
                 case "S":
-                    Proprietario p = cadastroProprietario(o_Veiculo);
-                    o_Veiculo.setProprietario(p);
+                    veiculo.DefinirProprietario(cadastroProprietario(veiculo));
                     break;
                 default:
                     Console.WriteLine("Escreva S ou N!");
                     break;
             }
 
-            veiculos.Add(o_Veiculo);
+            veiculos.Add(veiculo);
 
             return;
         }
@@ -136,7 +135,7 @@ namespace Estacionamento.App
         {
             foreach(var veiculo in veiculos)
             {
-                if (veiculo.getPlaca().Equals(placa)) return veiculo;
+                if (veiculo.Placa.Equals(placa)) return veiculo;
             }
 
             return null;
@@ -148,56 +147,68 @@ namespace Estacionamento.App
             // escolher veiculo
             Console.WriteLine("Digite a placa do veículo:");
             String placa = Console.ReadLine();
-            Veiculo v = procurarVeiculo(placa);
-            if (v == null)
+            Veiculo veiculo = procurarVeiculo(placa);
+            if (veiculo == null)
             {
                 Console.WriteLine("Placa não encontrada");
                 return;
             }
 
-            String DataAcesso = null, HoraEntrada = null, HoraSaida = null;
-            int tin = 0, tout = 0, estadia = 0;
-
             try
             {
                 Console.WriteLine("Data de Acesso:");
-                DataAcesso = Console.ReadLine();
+                if(DateTime.TryParse(Console.ReadLine(), out DateTime dataAcesso))
+                    throw new DadosAcessoIncompletosException("Campo vazio: Data de Acesso");
+
 
                 Console.WriteLine("Hora de Entrada(hh:mm):");
-                HoraEntrada = Console.ReadLine();
+                if (DateTime.TryParse(Console.ReadLine(), out DateTime dataHoraEntrada))
+                    throw new DadosAcessoIncompletosException("Campo vazio: Hora de entrada");
 
                 Console.WriteLine("Hora de Saida(hh:mm):");
-                HoraSaida = Console.ReadLine();
-
-                if (DataAcesso.Equals(""))
-                    throw new DadosAcessoIncompletosException("Campo vazio: Data de Acesso");
-                if (HoraEntrada.Equals(""))
-                    throw new DadosAcessoIncompletosException("Campo vazio: Hora de entrada");
-                if (HoraSaida.Equals(""))
+                if (DateTime.TryParse(Console.ReadLine(), out DateTime dataHoraSaida))
                     throw new DadosAcessoIncompletosException("Campo vazio: Hora de saida");
 
-                // Dividindo horas e minutos em inteiros
-                String[] HEsplit = HoraEntrada.Split(":");
-                int horaEntrada = int.Parse(HEsplit[0]);
-                int minutoEntrada = int.Parse(HEsplit[1]);
-                String[] HSsplit = HoraSaida.Split(":");
-                int horaSaida = int.Parse(HSsplit[0]);
-                int minutoSaida = int.Parse(HSsplit[1]);
+                var estadia = (decimal)(dataHoraSaida - dataHoraEntrada).TotalSeconds;
 
-                // Converte para apenas minutos
-                tin = horaEntrada * 60 + minutoEntrada;
-                tout = horaSaida * 60 + minutoSaida;
-
-                // Calcula o tempo de estadia (em minutos)
-                estadia = tout - tin;
-
-                if ((horaEntrada >= 20) && (horaEntrada <= 6))
+                if ((dataHoraEntrada.Hour >= 20) && (dataHoraEntrada.Hour <= 6))
                     throw new EstacionamentoFechadoException("Horario de entrada");
-                if ((horaSaida >= 20) && (horaSaida <= 6))
+                if ((dataHoraSaida.Hour >= 20) && (dataHoraSaida.Hour <= 6))
                     throw new EstacionamentoFechadoException("Horario de sai­da");
-                if (horaSaida * 60 + minutoSaida - horaEntrada * 60 + minutoEntrada <= 0)
+                if (dataHoraSaida.Hour * 60 + dataHoraSaida.Minute - dataHoraEntrada.Hour * 60 + dataHoraEntrada.Minute <= 0)
                     throw new PeriodoInvalidoException("Possivel pernoite");
 
+
+
+
+                EstacionamentoBasico estacionamento;
+                if (veiculo.Proprietario != null)
+                {
+                    // Estacionamento mensalista
+                    estacionamento = new EstacionamentoMensalista(dataAcesso, dataHoraEntrada, dataHoraSaida, veiculo);
+
+                }
+                else if (dataHoraSaida.Hour * 60 + dataHoraSaida.Minute - dataHoraEntrada.Hour * 60 + dataHoraEntrada.Minute <= 0)
+                {
+                    // Estacionamento pernoite
+                    estacionamento = new EstacionamentoPernoite(dataAcesso, dataHoraEntrada, dataHoraSaida, veiculo);
+
+                }
+                else if (estadia / 60 >= 9)
+                {
+                    // Estacionamento di�ria
+                    estacionamento = new EstacionamentoDiario(dataAcesso, dataHoraEntrada, dataHoraSaida, veiculo);
+
+                }
+                else
+                {
+                    // Estacionamento normal
+                    estacionamento = new EstacionamentoBasico(dataAcesso, dataHoraEntrada, dataHoraSaida, veiculo);
+
+                }
+
+                acessos.Add(estacionamento);
+                Console.WriteLine("Valor do Estacionamento: R$ %.2f \n", estacionamento.ValorEstacionamento);
             }
             catch (DadosAcessoIncompletosException e)
             {
@@ -222,35 +233,6 @@ namespace Estacionamento.App
                         break;
                 }
             }
-
-            EstacionamentoModel o_Estacionamento;
-            if (v.getProprietario() != null)
-            {
-                // Estacionamento mensalista
-                o_Estacionamento = new EstacionamentoMensalista(DataAcesso, HoraEntrada, HoraSaida, v);
-
-            }
-            else if (tin >= tout)
-            {
-                // Estacionamento pernoite
-                o_Estacionamento = new EstacionamentoPernoite(DataAcesso, HoraEntrada, HoraSaida, v);
-
-            }
-            else if (estadia / 60 >= 9)
-            {
-                // Estacionamento di�ria
-                o_Estacionamento = new EstacionamentoDiario(DataAcesso, HoraEntrada, HoraSaida, v);
-
-            }
-            else
-            {
-                // Estacionamento normal
-                o_Estacionamento = new EstacionamentoModel(DataAcesso, HoraEntrada, HoraSaida, v);
-
-            }
-
-            acessos.Add(o_Estacionamento);
-            Console.WriteLine("Valor do Estacionamento: R$ %.2f \n", o_Estacionamento.getValorEstacionamento());
         }
     }
 }
