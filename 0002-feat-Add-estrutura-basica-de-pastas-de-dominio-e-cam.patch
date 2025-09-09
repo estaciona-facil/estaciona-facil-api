@@ -1,0 +1,1299 @@
+From f909dd69c5a21e04a01452a00297a8a9d32e290b Mon Sep 17 00:00:00 2001
+From: Marcos Felipe <marcosfas.dev@gmail.com>
+Date: Sat, 30 Aug 2025 13:48:18 -0300
+Subject: [PATCH 2/6] =?UTF-8?q?feat(*):=20Add=20estrutura=20basica=20de=20?=
+ =?UTF-8?q?pastas=20de=20dominio=20e=20camada=20de=20data=20para=20comunic?=
+ =?UTF-8?q?a=C3=A7=C3=A3o=20com=20banco=20de=20dados?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ .../Estacionamento.Console/Program.cs         | 126 ++++++++----------
+ .../Context/ApplicationContext.cs             |  19 +++
+ .../EstacionamentoConfiguration.cs            |  34 +++++
+ .../ProprietarioConfiguration.cs              |  45 +++++++
+ .../Configurations/VeiculoConfiguration.cs    |  34 +++++
+ .../Context/ContextApplication.cs             |  19 +++
+ .../Estacionamento.Data.csproj                |  15 +++
+ .../Estacionamento/EstacionamentoBasico.cs    |  91 +++++++++++++
+ .../Estacionamento/EstacionamentoDiario.cs    |  22 +++
+ .../EstacionamentoMensalista.cs               |  20 +++
+ .../Estacionamento/EstacionamentoPernoite.cs  |  24 ++++
+ .../Entidades/Proprietario.cs                 |  48 +++++++
+ .../Entidades/Veiculo.cs                      |  42 ++++++
+ .../Estacionamento.Domain/Estacionamento.cs   | 117 ----------------
+ .../EstacionamentoDiario.cs                   |  35 -----
+ .../EstacionamentoFechadoException.cs         |  10 --
+ .../EstacionamentoMensalista.cs               |  17 ---
+ .../EstacionamentoPernoite.cs                 |  33 -----
+ .../DadosAcessoIncompletosException.cs        |   6 +-
+ .../DadosPessoaisIncompletosException.cs      |   6 +-
+ .../DadosVeiculosIncompletosException.cs      |   6 +-
+ .../EstacionamentoFechadoException.cs         |  10 ++
+ .../Exceptions/PeriodoInvalidoException.cs    |  10 ++
+ .../PeriodoInvalidoException.cs               |  10 --
+ .../Estacionamento.Domain/Proprietario.cs     |  67 ----------
+ .../Estacionamento.Domain/Veiculo.cs          |  61 ---------
+ Estacionamento/Estacionamento.sln             |  14 ++
+ 27 files changed, 510 insertions(+), 431 deletions(-)
+ create mode 100644 Estacionamento/Estacionamento.Data/Context/ApplicationContext.cs
+ create mode 100644 Estacionamento/Estacionamento.Data/Context/Configurations/EstacionamentoConfiguration.cs
+ create mode 100644 Estacionamento/Estacionamento.Data/Context/Configurations/ProprietarioConfiguration.cs
+ create mode 100644 Estacionamento/Estacionamento.Data/Context/Configurations/VeiculoConfiguration.cs
+ create mode 100644 Estacionamento/Estacionamento.Data/Context/ContextApplication.cs
+ create mode 100644 Estacionamento/Estacionamento.Data/Estacionamento.Data.csproj
+ create mode 100644 Estacionamento/Estacionamento.Domain/Entidades/Estacionamento/EstacionamentoBasico.cs
+ create mode 100644 Estacionamento/Estacionamento.Domain/Entidades/Estacionamento/EstacionamentoDiario.cs
+ create mode 100644 Estacionamento/Estacionamento.Domain/Entidades/Estacionamento/EstacionamentoMensalista.cs
+ create mode 100644 Estacionamento/Estacionamento.Domain/Entidades/Estacionamento/EstacionamentoPernoite.cs
+ create mode 100644 Estacionamento/Estacionamento.Domain/Entidades/Proprietario.cs
+ create mode 100644 Estacionamento/Estacionamento.Domain/Entidades/Veiculo.cs
+ delete mode 100644 Estacionamento/Estacionamento.Domain/Estacionamento.cs
+ delete mode 100644 Estacionamento/Estacionamento.Domain/EstacionamentoDiario.cs
+ delete mode 100644 Estacionamento/Estacionamento.Domain/EstacionamentoFechadoException.cs
+ delete mode 100644 Estacionamento/Estacionamento.Domain/EstacionamentoMensalista.cs
+ delete mode 100644 Estacionamento/Estacionamento.Domain/EstacionamentoPernoite.cs
+ rename Estacionamento/Estacionamento.Domain/{ => Exceptions}/DadosAcessoIncompletosException.cs (50%)
+ rename Estacionamento/Estacionamento.Domain/{ => Exceptions}/DadosPessoaisIncompletosException.cs (51%)
+ rename Estacionamento/Estacionamento.Domain/{ => Exceptions}/DadosVeiculosIncompletosException.cs (51%)
+ create mode 100644 Estacionamento/Estacionamento.Domain/Exceptions/EstacionamentoFechadoException.cs
+ create mode 100644 Estacionamento/Estacionamento.Domain/Exceptions/PeriodoInvalidoException.cs
+ delete mode 100644 Estacionamento/Estacionamento.Domain/PeriodoInvalidoException.cs
+ delete mode 100644 Estacionamento/Estacionamento.Domain/Proprietario.cs
+ delete mode 100644 Estacionamento/Estacionamento.Domain/Veiculo.cs
+
+diff --git a/Estacionamento/Estacionamento.Console/Program.cs b/Estacionamento/Estacionamento.Console/Program.cs
+index 276e8d3..ef1bb1a 100644
+--- a/Estacionamento/Estacionamento.Console/Program.cs
++++ b/Estacionamento/Estacionamento.Console/Program.cs
+@@ -1,15 +1,15 @@
+-﻿using Estacionamento.Domain;
++﻿using Estacionamento.Domain.Entidades;
++using Estacionamento.Domain.Entidades.Estacionamento;
++using Estacionamento.Domain.Exceptions;
+ using System;
+ using System.Collections.Generic;
+-using EstacionamentoModel = Estacionamento.Domain.Estacionamento;
+ 
+ namespace Estacionamento.App
+ {
+     class Program
+     {
+         private static List<Veiculo> veiculos = new List<Veiculo>();
+-        private static List<Proprietario> proprietarios = new List<Proprietario>();
+-        private static List<EstacionamentoModel> acessos = new List<EstacionamentoModel>();
++        private static List<EstacionamentoBasico> acessos = new List<EstacionamentoBasico>();
+ 
+         static void Main(string[] args)
+         {
+@@ -34,7 +34,7 @@ namespace Estacionamento.App
+                 }
+             } while (!opcaoEscolhida.Equals("0"));
+ 
+-            Console.WriteLine("Faturamento da sessão: R$ %.2f", EstacionamentoModel.getFaturamento());
++            Console.WriteLine("Faturamento da sessão: R$ %.2f", EstacionamentoBasico.Faturamento);
+         }
+ 
+ 
+@@ -77,8 +77,8 @@ namespace Estacionamento.App
+                 return null;
+             }
+ 
+-            Proprietario o_Proprietario = new Proprietario(nome, endereco, int.Parse(celular), int.Parse(telefone), int.Parse(cnh));
+-            return o_Proprietario;
++            Proprietario proprietario = new Proprietario(nome, endereco, celular, telefone, int.Parse(cnh));
++            return proprietario;
+         }
+ 
+         public static void cadastroVeiculo()
+@@ -109,7 +109,7 @@ namespace Estacionamento.App
+                 return;
+             }
+ 
+-            Veiculo o_Veiculo = new Veiculo(marca, modelo, placa);
++            Veiculo veiculo = new Veiculo(marca, modelo, placa);
+ 
+             Console.WriteLine("É veiculo de mensalidade? S/N");
+             String resposta = Console.ReadLine().ToUpper();
+@@ -119,15 +119,14 @@ namespace Estacionamento.App
+                 case "N":
+                     break;
+                 case "S":
+-                    Proprietario p = cadastroProprietario(o_Veiculo);
+-                    o_Veiculo.setProprietario(p);
++                    veiculo.DefinirProprietario(cadastroProprietario(veiculo));
+                     break;
+                 default:
+                     Console.WriteLine("Escreva S ou N!");
+                     break;
+             }
+ 
+-            veiculos.Add(o_Veiculo);
++            veiculos.Add(veiculo);
+ 
+             return;
+         }
+@@ -136,7 +135,7 @@ namespace Estacionamento.App
+         {
+             foreach(var veiculo in veiculos)
+             {
+-                if (veiculo.getPlaca().Equals(placa)) return veiculo;
++                if (veiculo.Placa.Equals(placa)) return veiculo;
+             }
+ 
+             return null;
+@@ -148,56 +147,68 @@ namespace Estacionamento.App
+             // escolher veiculo
+             Console.WriteLine("Digite a placa do veículo:");
+             String placa = Console.ReadLine();
+-            Veiculo v = procurarVeiculo(placa);
+-            if (v == null)
++            Veiculo veiculo = procurarVeiculo(placa);
++            if (veiculo == null)
+             {
+                 Console.WriteLine("Placa não encontrada");
+                 return;
+             }
+ 
+-            String DataAcesso = null, HoraEntrada = null, HoraSaida = null;
+-            int tin = 0, tout = 0, estadia = 0;
+-
+             try
+             {
+                 Console.WriteLine("Data de Acesso:");
+-                DataAcesso = Console.ReadLine();
++                if(DateTime.TryParse(Console.ReadLine(), out DateTime dataAcesso))
++                    throw new DadosAcessoIncompletosException("Campo vazio: Data de Acesso");
++
+ 
+                 Console.WriteLine("Hora de Entrada(hh:mm):");
+-                HoraEntrada = Console.ReadLine();
++                if (DateTime.TryParse(Console.ReadLine(), out DateTime dataHoraEntrada))
++                    throw new DadosAcessoIncompletosException("Campo vazio: Hora de entrada");
+ 
+                 Console.WriteLine("Hora de Saida(hh:mm):");
+-                HoraSaida = Console.ReadLine();
+-
+-                if (DataAcesso.Equals(""))
+-                    throw new DadosAcessoIncompletosException("Campo vazio: Data de Acesso");
+-                if (HoraEntrada.Equals(""))
+-                    throw new DadosAcessoIncompletosException("Campo vazio: Hora de entrada");
+-                if (HoraSaida.Equals(""))
++                if (DateTime.TryParse(Console.ReadLine(), out DateTime dataHoraSaida))
+                     throw new DadosAcessoIncompletosException("Campo vazio: Hora de saida");
+ 
+-                // Dividindo horas e minutos em inteiros
+-                String[] HEsplit = HoraEntrada.Split(":");
+-                int horaEntrada = int.Parse(HEsplit[0]);
+-                int minutoEntrada = int.Parse(HEsplit[1]);
+-                String[] HSsplit = HoraSaida.Split(":");
+-                int horaSaida = int.Parse(HSsplit[0]);
+-                int minutoSaida = int.Parse(HSsplit[1]);
+-
+-                // Converte para apenas minutos
+-                tin = horaEntrada * 60 + minutoEntrada;
+-                tout = horaSaida * 60 + minutoSaida;
++                var estadia = (decimal)(dataHoraSaida - dataHoraEntrada).TotalSeconds;
+ 
+-                // Calcula o tempo de estadia (em minutos)
+-                estadia = tout - tin;
+-
+-                if ((horaEntrada >= 20) && (horaEntrada <= 6))
++                if ((dataHoraEntrada.Hour >= 20) && (dataHoraEntrada.Hour <= 6))
+                     throw new EstacionamentoFechadoException("Horario de entrada");
+-                if ((horaSaida >= 20) && (horaSaida <= 6))
++                if ((dataHoraSaida.Hour >= 20) && (dataHoraSaida.Hour <= 6))
+                     throw new EstacionamentoFechadoException("Horario de sai­da");
+-                if (horaSaida * 60 + minutoSaida - horaEntrada * 60 + minutoEntrada <= 0)
++                if (dataHoraSaida.Hour * 60 + dataHoraSaida.Minute - dataHoraEntrada.Hour * 60 + dataHoraEntrada.Minute <= 0)
+                     throw new PeriodoInvalidoException("Possivel pernoite");
+ 
++
++
++
++                EstacionamentoBasico estacionamento;
++                if (veiculo.Proprietario != null)
++                {
++                    // Estacionamento mensalista
++                    estacionamento = new EstacionamentoMensalista(dataAcesso, dataHoraEntrada, dataHoraSaida, veiculo);
++
++                }
++                else if (dataHoraSaida.Hour * 60 + dataHoraSaida.Minute - dataHoraEntrada.Hour * 60 + dataHoraEntrada.Minute <= 0)
++                {
++                    // Estacionamento pernoite
++                    estacionamento = new EstacionamentoPernoite(dataAcesso, dataHoraEntrada, dataHoraSaida, veiculo);
++
++                }
++                else if (estadia / 60 >= 9)
++                {
++                    // Estacionamento di�ria
++                    estacionamento = new EstacionamentoDiario(dataAcesso, dataHoraEntrada, dataHoraSaida, veiculo);
++
++                }
++                else
++                {
++                    // Estacionamento normal
++                    estacionamento = new EstacionamentoBasico(dataAcesso, dataHoraEntrada, dataHoraSaida, veiculo);
++
++                }
++
++                acessos.Add(estacionamento);
++                Console.WriteLine("Valor do Estacionamento: R$ %.2f \n", estacionamento.ValorEstacionamento);
+             }
+             catch (DadosAcessoIncompletosException e)
+             {
+@@ -222,35 +233,6 @@ namespace Estacionamento.App
+                         break;
+                 }
+             }
+-
+-            EstacionamentoModel o_Estacionamento;
+-            if (v.getProprietario() != null)
+-            {
+-                // Estacionamento mensalista
+-                o_Estacionamento = new EstacionamentoMensalista(DataAcesso, HoraEntrada, HoraSaida, v);
+-
+-            }
+-            else if (tin >= tout)
+-            {
+-                // Estacionamento pernoite
+-                o_Estacionamento = new EstacionamentoPernoite(DataAcesso, HoraEntrada, HoraSaida, v);
+-
+-            }
+-            else if (estadia / 60 >= 9)
+-            {
+-                // Estacionamento di�ria
+-                o_Estacionamento = new EstacionamentoDiario(DataAcesso, HoraEntrada, HoraSaida, v);
+-
+-            }
+-            else
+-            {
+-                // Estacionamento normal
+-                o_Estacionamento = new EstacionamentoModel(DataAcesso, HoraEntrada, HoraSaida, v);
+-
+-            }
+-
+-            acessos.Add(o_Estacionamento);
+-            Console.WriteLine("Valor do Estacionamento: R$ %.2f \n", o_Estacionamento.getValorEstacionamento());
+         }
+     }
+ }
+diff --git a/Estacionamento/Estacionamento.Data/Context/ApplicationContext.cs b/Estacionamento/Estacionamento.Data/Context/ApplicationContext.cs
+new file mode 100644
+index 0000000..def60c2
+--- /dev/null
++++ b/Estacionamento/Estacionamento.Data/Context/ApplicationContext.cs
+@@ -0,0 +1,19 @@
++using Estacionamento.Data.Context.Configurations;
++using Microsoft.EntityFrameworkCore;
++
++namespace Estacionamento.Data.Context
++{
++    public class ApplicationContext : DbContext
++    {
++        private readonly string _connectionString = "Data source=(localdb)\\mssqllocaldb;Initial Catalog=Estacionamento;Integrated Security=true";
++        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
++        {
++            optionsBuilder.UseSqlServer(_connectionString);
++        }
++
++        protected override void OnModelCreating(ModelBuilder modelBuilder)
++        {
++            modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationContext).Assembly);
++        }
++    }
++}
+\ No newline at end of file
+diff --git a/Estacionamento/Estacionamento.Data/Context/Configurations/EstacionamentoConfiguration.cs b/Estacionamento/Estacionamento.Data/Context/Configurations/EstacionamentoConfiguration.cs
+new file mode 100644
+index 0000000..e56d37d
+--- /dev/null
++++ b/Estacionamento/Estacionamento.Data/Context/Configurations/EstacionamentoConfiguration.cs
+@@ -0,0 +1,34 @@
++using Estacionamento.Domain.Entidades.Estacionamento;
++using Microsoft.EntityFrameworkCore;
++using Microsoft.EntityFrameworkCore.Metadata.Builders;
++
++namespace Estacionamento.Data.Context.Configurations
++{
++    public class EstacionamentoConfiguration : IEntityTypeConfiguration<EstacionamentoBasico>
++    {
++        public void Configure(EntityTypeBuilder<EstacionamentoBasico> builder)
++        {
++            builder.ToTable("Estacionamento");
++
++            builder.HasKey("Id");
++            builder.Property(x => x.Id)
++                .IsRequired()
++                .HasColumnType("VARCHAR(50)")
++                .HasColumnName("Id");
++
++            builder.Property(x => x.DataAcesso)
++                .IsRequired()
++                .HasColumnType("DATETIME")
++                .HasColumnName("DataAcesso");
++
++            builder.Property(x => x.DataHoraEntrada)
++                .IsRequired()
++                .HasColumnType("DATETIME")
++                .HasColumnName("DataHoraEntrada");
++
++            builder.Property(x => x.DataHoraSaida)
++                .HasColumnType("DATETIME")
++                .HasColumnName("DataHoraSaida");
++        }
++    }
++}
+\ No newline at end of file
+diff --git a/Estacionamento/Estacionamento.Data/Context/Configurations/ProprietarioConfiguration.cs b/Estacionamento/Estacionamento.Data/Context/Configurations/ProprietarioConfiguration.cs
+new file mode 100644
+index 0000000..20d2814
+--- /dev/null
++++ b/Estacionamento/Estacionamento.Data/Context/Configurations/ProprietarioConfiguration.cs
+@@ -0,0 +1,45 @@
++using Estacionamento.Domain.Entidades;
++using Microsoft.EntityFrameworkCore;
++using Microsoft.EntityFrameworkCore.Metadata.Builders;
++
++namespace Estacionamento.Data.Context.Configurations
++{
++    public class ProprietarioConfiguration : IEntityTypeConfiguration<Proprietario>
++    {
++        public void Configure(EntityTypeBuilder<Proprietario> builder)
++        {
++            builder.ToTable("Proprietario");
++
++            builder.HasKey("Id");
++            builder.Property(x => x.Id)
++                .IsRequired()
++                .HasColumnType("VARCHAR(50)")
++                .HasColumnName("Id");
++
++            builder.Property(x => x.Nome)
++                .IsRequired()
++                .HasColumnType("VARCHAR(150)")
++                .HasColumnName("Nome");
++
++            builder.Property(x => x.NumeroCarteiraNacionalDeHabilitacao)
++                .IsRequired()
++                .HasColumnType("BIGINT")
++                .HasColumnName("Cnh");
++
++            builder.Property(x => x.Telefone)
++               .IsRequired()
++               .HasColumnType("CHAR(13)")
++               .HasColumnName("Telefone");
++
++            builder.Property(x => x.Celular)
++               .IsRequired()
++               .HasColumnType("CHAR(13)")
++               .HasColumnName("Celular");
++
++            builder.Property(x => x.Endereco)
++               .IsRequired()
++               .HasColumnType("VARCHAR(200)")
++               .HasColumnName("Endereco");
++        }
++    }
++}
+\ No newline at end of file
+diff --git a/Estacionamento/Estacionamento.Data/Context/Configurations/VeiculoConfiguration.cs b/Estacionamento/Estacionamento.Data/Context/Configurations/VeiculoConfiguration.cs
+new file mode 100644
+index 0000000..f9b3a89
+--- /dev/null
++++ b/Estacionamento/Estacionamento.Data/Context/Configurations/VeiculoConfiguration.cs
+@@ -0,0 +1,34 @@
++using Microsoft.EntityFrameworkCore;
++using Microsoft.EntityFrameworkCore.Metadata.Builders;
++
++namespace Estacionamento.Data.Context.Configurations
++{
++    public class VeiculoConfiguration : IEntityTypeConfiguration<Veiculo>
++    {
++        public void Configure(EntityTypeBuilder<Veiculo> builder)
++        {
++            builder.ToTable("Veiculo");
++
++            builder.HasKey("Id");
++            builder.Property(x => x.Id)
++                .IsRequired()
++                .HasColumnType("VARCHAR(50)")
++                .HasColumnName("Id");
++
++            builder.Property(x => x.Placa)
++                .IsRequired()
++                .HasColumnType("CHAR(8)")
++                .HasColumnName("Placa");
++
++            builder.Property(x => x.Modelo)
++                .IsRequired()
++                .HasColumnType("VARCHAR(50)")
++                .HasColumnName("Modelo");
++
++            builder.Property(x => x.Marca)
++               .IsRequired()
++               .HasColumnType("VARCHAR(25)")
++               .HasColumnName("Marca");
++        }
++    }
++}
+\ No newline at end of file
+diff --git a/Estacionamento/Estacionamento.Data/Context/ContextApplication.cs b/Estacionamento/Estacionamento.Data/Context/ContextApplication.cs
+new file mode 100644
+index 0000000..def60c2
+--- /dev/null
++++ b/Estacionamento/Estacionamento.Data/Context/ContextApplication.cs
+@@ -0,0 +1,19 @@
++using Estacionamento.Data.Context.Configurations;
++using Microsoft.EntityFrameworkCore;
++
++namespace Estacionamento.Data.Context
++{
++    public class ApplicationContext : DbContext
++    {
++        private readonly string _connectionString = "Data source=(localdb)\\mssqllocaldb;Initial Catalog=Estacionamento;Integrated Security=true";
++        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
++        {
++            optionsBuilder.UseSqlServer(_connectionString);
++        }
++
++        protected override void OnModelCreating(ModelBuilder modelBuilder)
++        {
++            modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationContext).Assembly);
++        }
++    }
++}
+\ No newline at end of file
+diff --git a/Estacionamento/Estacionamento.Data/Estacionamento.Data.csproj b/Estacionamento/Estacionamento.Data/Estacionamento.Data.csproj
+new file mode 100644
+index 0000000..8df1553
+--- /dev/null
++++ b/Estacionamento/Estacionamento.Data/Estacionamento.Data.csproj
+@@ -0,0 +1,15 @@
++<Project Sdk="Microsoft.NET.Sdk">
++
++  <PropertyGroup>
++    <TargetFramework>netcoreapp3.1</TargetFramework>
++  </PropertyGroup>
++
++  <ItemGroup>
++    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.5" />
++  </ItemGroup>
++
++  <ItemGroup>
++    <ProjectReference Include="..\Estacionamento.Domain\Estacionamento.Domain.csproj" />
++  </ItemGroup>
++
++</Project>
+diff --git a/Estacionamento/Estacionamento.Domain/Entidades/Estacionamento/EstacionamentoBasico.cs b/Estacionamento/Estacionamento.Domain/Entidades/Estacionamento/EstacionamentoBasico.cs
+new file mode 100644
+index 0000000..779cf51
+--- /dev/null
++++ b/Estacionamento/Estacionamento.Domain/Entidades/Estacionamento/EstacionamentoBasico.cs
+@@ -0,0 +1,91 @@
++﻿using System;
++
++namespace Estacionamento.Domain.Entidades.Estacionamento
++{
++    public class EstacionamentoBasico
++    {
++        public EstacionamentoBasico(DateTime dataAcesso, DateTime dataHoraEntrada, DateTime? dataHoraSaida, Veiculo veiculo)
++        {
++            DefinirDataAcesso(dataAcesso);
++            DefinirDataHoraEntrada(dataHoraEntrada);
++            DefinirDataHoraSaida(dataHoraSaida);
++            DefinirVeiculo(veiculo);
++
++            CalcularPreco();
++        }
++
++        public Guid Id { get; private set; }
++        public DateTime DataAcesso { get; private set; }
++        public DateTime DataHoraEntrada { get; private set; }
++        public DateTime? DataHoraSaida { get; private set; }
++        public decimal ValorEstacionamento { get; private set; }
++        public static decimal Faturamento { get; private set; }
++
++        public virtual Veiculo Veiculo { get; set; }
++
++        public void DefinirDataAcesso(DateTime valor)
++        {
++            DataAcesso = valor;
++        }
++
++        public void DefinirDataHoraEntrada(DateTime valor)
++        {
++            DataHoraEntrada = valor;
++        }
++
++        public void DefinirDataHoraSaida(DateTime? valor)
++        {
++            DataHoraSaida = valor;
++        }
++
++        public void DefinirValorEstacionamento(decimal valor)
++        {
++            ValorEstacionamento = valor;
++        }
++
++        public void DefinirVeiculo(Veiculo valor)
++        {
++            Veiculo = valor;
++        }
++
++        public void AdicionarValorFaturamento(decimal faturamento)
++        {
++            Faturamento += faturamento;
++        }
++
++        public void LimparValorFaturamento()
++        {
++            Faturamento = 0;
++        }
++
++        protected decimal CalculoValorEstadiaPorMinuto(decimal minutosPermanecidos, decimal precoMinuto)
++        {
++            decimal valorPago = precoMinuto * minutosPermanecidos;
++
++            // Desconto hora
++            while (minutosPermanecidos >= 60)
++            {
++                valorPago -= minutosPermanecidos / 60;
++                minutosPermanecidos = minutosPermanecidos / 60;
++            }
++
++            // Desconto 15min
++            while (minutosPermanecidos >= 15)
++            {
++                valorPago -= minutosPermanecidos / 15 * 0.5M;
++                minutosPermanecidos = minutosPermanecidos / 15;
++            }
++
++            return valorPago;
++        }
++
++        public virtual void CalcularPreco()
++        {
++            var valorMinuto = 0.5M;
++            var tempoDentroDoEstacionamento = (decimal)(DataHoraSaida - DataHoraEntrada).Value.TotalSeconds;
++
++            DefinirValorEstacionamento(CalculoValorEstadiaPorMinuto(tempoDentroDoEstacionamento, valorMinuto));
++            AdicionarValorFaturamento(ValorEstacionamento);
++        }
++    }
++}
+diff --git a/Estacionamento/Estacionamento.Domain/Entidades/Estacionamento/EstacionamentoDiario.cs b/Estacionamento/Estacionamento.Domain/Entidades/Estacionamento/EstacionamentoDiario.cs
+new file mode 100644
+index 0000000..b14e3ee
+--- /dev/null
++++ b/Estacionamento/Estacionamento.Domain/Entidades/Estacionamento/EstacionamentoDiario.cs
+@@ -0,0 +1,22 @@
++﻿using System;
++
++namespace Estacionamento.Domain.Entidades.Estacionamento
++{
++    public class EstacionamentoDiario : EstacionamentoBasico
++    {
++        public EstacionamentoDiario(DateTime dataAcesso, DateTime horaEntrada, DateTime? horaSaida, Veiculo veiculo)
++            : base(dataAcesso, horaEntrada, horaSaida, veiculo)
++        {
++            DefinirValorEstacionamento(110);
++        }
++        
++        public override void CalcularPreco()
++        {
++            decimal valorMinuto = 0.2M;
++            var tempoDentroDoEstacionamento = (decimal)(DataHoraSaida - DataHoraEntrada).Value.TotalSeconds;
++
++            DefinirValorEstacionamento(ValorEstacionamento + CalculoValorEstadiaPorMinuto(tempoDentroDoEstacionamento, valorMinuto));
++            AdicionarValorFaturamento(ValorEstacionamento);
++        }
++    }
++}
+diff --git a/Estacionamento/Estacionamento.Domain/Entidades/Estacionamento/EstacionamentoMensalista.cs b/Estacionamento/Estacionamento.Domain/Entidades/Estacionamento/EstacionamentoMensalista.cs
+new file mode 100644
+index 0000000..cb273c5
+--- /dev/null
++++ b/Estacionamento/Estacionamento.Domain/Entidades/Estacionamento/EstacionamentoMensalista.cs
+@@ -0,0 +1,20 @@
++﻿using Estacionamento.Domain.Entidades;
++using System;
++
++namespace Estacionamento.Domain.Entidades.Estacionamento
++{
++    public class EstacionamentoMensalista : EstacionamentoBasico
++    {
++        public EstacionamentoMensalista(DateTime dataAcesso, DateTime horaEntrada, DateTime? horaSaida, Veiculo veiculo)
++            : base(dataAcesso, horaEntrada, horaSaida, veiculo) 
++        {
++            DefinirValorEstacionamento(500);
++        }
++
++        
++        public override void CalcularPreco()
++        {
++            AdicionarValorFaturamento(ValorEstacionamento);
++        }
++    }
++}
+diff --git a/Estacionamento/Estacionamento.Domain/Entidades/Estacionamento/EstacionamentoPernoite.cs b/Estacionamento/Estacionamento.Domain/Entidades/Estacionamento/EstacionamentoPernoite.cs
+new file mode 100644
+index 0000000..e73835f
+--- /dev/null
++++ b/Estacionamento/Estacionamento.Domain/Entidades/Estacionamento/EstacionamentoPernoite.cs
+@@ -0,0 +1,24 @@
++﻿using System;
++
++namespace Estacionamento.Domain.Entidades.Estacionamento
++{
++    public class EstacionamentoPernoite : EstacionamentoBasico
++    {
++        public EstacionamentoPernoite(DateTime dataAcesso, DateTime horaEntrada, DateTime? horaSaida, Veiculo veiculo)
++            : base(dataAcesso, horaEntrada, horaSaida, veiculo) { }
++
++        
++        public override void CalcularPreco()
++        {
++            var valorMinuto = 0.5M;
++
++            DefinirValorEstacionamento(
++                30 +
++                CalculoValorEstadiaPorMinuto(60 * 20 - DataHoraEntrada.Ticks, valorMinuto) +
++                CalculoValorEstadiaPorMinuto(DataHoraSaida.Value.Ticks - 60 * 6, valorMinuto) 
++            );
++
++            AdicionarValorFaturamento(ValorEstacionamento);
++        }
++    }
++}
+diff --git a/Estacionamento/Estacionamento.Domain/Entidades/Proprietario.cs b/Estacionamento/Estacionamento.Domain/Entidades/Proprietario.cs
+new file mode 100644
+index 0000000..2e28cb0
+--- /dev/null
++++ b/Estacionamento/Estacionamento.Domain/Entidades/Proprietario.cs
+@@ -0,0 +1,48 @@
++﻿using System;
++
++namespace Estacionamento.Domain.Entidades
++{
++    public class Proprietario
++    {
++        public Proprietario(string nome, string endereco, string celular, string telefone, int cnh)
++        {
++            DefinirNome(nome);
++            DefinirCnh(cnh);
++            DefinirEndereco(endereco);
++            DefinirCelular(celular);
++            DefinirTelefone(telefone);
++        }
++
++        public Guid Id { get; private set; }
++        public string Nome { get; private set; }
++        public long NumeroCarteiraNacionalDeHabilitacao { get; private set; }
++        public string Telefone { get; private set; }
++        public string Celular { get; private set; }
++        public string Endereco { get; private set; }
++
++        public void DefinirNome(string valor)
++        {
++            this.Nome = valor;
++        }
++
++        public void DefinirCnh(long valor)
++        {
++            this.NumeroCarteiraNacionalDeHabilitacao = valor;
++        }
++
++        public void DefinirTelefone(string valor)
++        {
++            this.Telefone = valor;
++        }
++
++        public void DefinirCelular(string valor)
++        {
++            this.Celular = valor;
++        }
++
++        public void DefinirEndereco(string valor)
++        {
++            this.Endereco = valor;
++        }
++    }
++}
+diff --git a/Estacionamento/Estacionamento.Domain/Entidades/Veiculo.cs b/Estacionamento/Estacionamento.Domain/Entidades/Veiculo.cs
+new file mode 100644
+index 0000000..00d6771
+--- /dev/null
++++ b/Estacionamento/Estacionamento.Domain/Entidades/Veiculo.cs
+@@ -0,0 +1,42 @@
++﻿using System;
++
++namespace Estacionamento.Domain.Entidades
++{
++    public class Veiculo
++    {
++        public Veiculo(string marca, string modelo, string placa)
++        {
++            DefinirPlaca(placa);
++            DefinirMarca(marca);
++            DefinirModelo(modelo);
++        }
++
++        public Guid Id { get; private set; }
++        public string Marca { get; private set; }
++        public string Modelo { get; private set; }
++        public string Placa { get; private set; }
++
++        public virtual Proprietario Proprietario { get; set; }
++
++
++        public void DefinirMarca(string marca)
++        {
++            this.Marca = marca;
++        }
++
++        public void DefinirModelo(string modelo)
++        {
++            this.Modelo = modelo;
++        }
++
++        public void DefinirPlaca(string placa)
++        {
++            this.Placa = placa;
++        }
++
++        public void DefinirProprietario(Proprietario proprietario)
++        {
++            this.Proprietario = proprietario;
++        }
++    }
++}
+diff --git a/Estacionamento/Estacionamento.Domain/Estacionamento.cs b/Estacionamento/Estacionamento.Domain/Estacionamento.cs
+deleted file mode 100644
+index e090330..0000000
+--- a/Estacionamento/Estacionamento.Domain/Estacionamento.cs
++++ /dev/null
+@@ -1,117 +0,0 @@
+-﻿using System;
+-
+-namespace Estacionamento.Domain
+-{
+-    public class Estacionamento
+-    {
+-        protected String data_acesso;
+-        protected String hora_entrada;
+-        protected String hora_saida;
+-        protected float valorEstacionamento;
+-
+-        protected static float faturamento;
+-
+-        protected Veiculo veiculo;
+-
+-        public String getData_acesso()
+-        {
+-            return data_acesso;
+-        }
+-        public void setData_acesso(String data_acesso)
+-        {
+-            this.data_acesso = data_acesso;
+-        }
+-
+-        public String getHora_entrada()
+-        {
+-            return hora_entrada;
+-        }
+-        public void setHora_entrada(String hora_entrada)
+-        {
+-            this.hora_entrada = hora_entrada;
+-        }
+-
+-        public String getHora_saida()
+-        {
+-            return hora_saida;
+-        }
+-        public void setHora_saida(String hora_saida)
+-        {
+-            this.hora_saida = hora_saida;
+-        }
+-
+-        public static float getFaturamento()
+-        {
+-            return faturamento;
+-        }
+-
+-        public void zerarFaturamento()
+-        {
+-            faturamento = 0;
+-        }
+-
+-        public float getValorEstacionamento()
+-        {
+-            return valorEstacionamento;
+-        }
+-
+-        //This is constructor of Estacionamento Class
+-        public Estacionamento(String data_acesso, String hora_entrada, String hora_saida, Veiculo v)
+-        {
+-            this.data_acesso = data_acesso;
+-            this.hora_entrada = hora_entrada;
+-            this.hora_saida = hora_saida;
+-            this.veiculo = v;
+-
+-            calcularPreco();
+-        }
+-
+-        protected float calculoEstadia(int minutosPermanecidos, float precoMinuto)
+-        {
+-            float valorPago = precoMinuto * minutosPermanecidos;
+-
+-            // Desconto hora
+-            while (minutosPermanecidos >= 60)
+-            {
+-                valorPago -= minutosPermanecidos / 60;
+-                minutosPermanecidos = minutosPermanecidos / 60;
+-            }
+-
+-            // Desconto 15min
+-            while (minutosPermanecidos >= 15)
+-            {
+-                valorPago -= (minutosPermanecidos / 15) * (0.5f);
+-                minutosPermanecidos = minutosPermanecidos / 15;
+-            }
+-
+-            return valorPago;
+-        }
+-
+-        public virtual void calcularPreco()
+-        {
+-            // Obter tempo em minutos
+-            // Guardar hora e minuto de entrada
+-            string[] HEsplit = this.hora_entrada.Split(":");
+-            int horaEntrada = int.Parse(HEsplit[0]);
+-            int minutoEntrada = int.Parse(HEsplit[1]);
+-            // Guardar hora e minuto de saida
+-
+-            string[] HSsplit = this.hora_saida.Split(":");
+-            int horaSaida = int.Parse(HSsplit[0]);
+-            int minutoSaida = int.Parse(HSsplit[1]);
+-
+-            // Converte para apenas minutos
+-            int tin = horaEntrada * 60 + minutoEntrada;
+-            int tout = horaSaida * 60 + minutoSaida;
+-
+-            // Calcula o tempo de estadia (em minutos)
+-            int estadia = tout - tin; // AQUI ESTÁ O TEMPO DE ESTADIA EM MINUTOS		
+-
+-            float valorMinuto = 0.5f;
+-            valorEstacionamento = calculoEstadia(estadia, valorMinuto);
+-            faturamento += valorEstacionamento;
+-
+-            return;
+-        }
+-    }
+-}
+diff --git a/Estacionamento/Estacionamento.Domain/EstacionamentoDiario.cs b/Estacionamento/Estacionamento.Domain/EstacionamentoDiario.cs
+deleted file mode 100644
+index e8eba8f..0000000
+--- a/Estacionamento/Estacionamento.Domain/EstacionamentoDiario.cs
++++ /dev/null
+@@ -1,35 +0,0 @@
+-﻿using System;
+-
+-namespace Estacionamento.Domain
+-{
+-    public class EstacionamentoDiario : Estacionamento
+-    {
+-        public EstacionamentoDiario(String dataAcesso, String horaEntrada, String horaSaida, Veiculo v)
+-            : base(dataAcesso, horaEntrada, horaSaida, v) { }
+-
+-        
+-        public override void calcularPreco()
+-        {
+-            String[] HEsplit = this.hora_entrada.Split(":");
+-            int horaEntrada = int.Parse(HEsplit[0]);
+-            int minutoEntrada = int.Parse(HEsplit[1]);
+-            // Guardar hora e minuto de saida
+-
+-            String[] HSsplit = this.hora_saida.Split(":");
+-            int horaSaida = int.Parse(HSsplit[0]);
+-            int minutoSaida = int.Parse(HSsplit[1]);
+-
+-            // Converte para apenas minutos
+-            int tin = horaEntrada * 60 + minutoEntrada;
+-            int tout = horaSaida * 60 + minutoSaida;
+-
+-            // Calcula o tempo de estadia (em minutos)
+-            int estadia = tout - tin; // AQUI ESTÁ O TEMPO DE ESTADIA EM MINUTOS
+-
+-            float valorMinuto = 0.2f;
+-            valorEstacionamento = 110;
+-            valorEstacionamento += calculoEstadia(estadia - 9 * 60, valorMinuto);
+-            faturamento += valorEstacionamento;
+-        }
+-    }
+-}
+diff --git a/Estacionamento/Estacionamento.Domain/EstacionamentoFechadoException.cs b/Estacionamento/Estacionamento.Domain/EstacionamentoFechadoException.cs
+deleted file mode 100644
+index ecbb77e..0000000
+--- a/Estacionamento/Estacionamento.Domain/EstacionamentoFechadoException.cs
++++ /dev/null
+@@ -1,10 +0,0 @@
+-﻿using System;
+-
+-namespace Estacionamento.Domain
+-{
+-    public class EstacionamentoFechadoException : Exception
+-    {
+-        public EstacionamentoFechadoException (String errorMessage, Exception ex) : base(errorMessage, ex) { }
+-        public EstacionamentoFechadoException (String errorMessage) : base(errorMessage) { }
+-    }
+-}
+diff --git a/Estacionamento/Estacionamento.Domain/EstacionamentoMensalista.cs b/Estacionamento/Estacionamento.Domain/EstacionamentoMensalista.cs
+deleted file mode 100644
+index aa3a381..0000000
+--- a/Estacionamento/Estacionamento.Domain/EstacionamentoMensalista.cs
++++ /dev/null
+@@ -1,17 +0,0 @@
+-﻿using System;
+-
+-namespace Estacionamento.Domain
+-{
+-    public class EstacionamentoMensalista : Estacionamento
+-    {
+-        public EstacionamentoMensalista(String dataAcesso, String horaEntrada, String horaSaida, Veiculo v)
+-            : base(dataAcesso, horaEntrada, horaSaida, v) { }
+-
+-        
+-        public override void calcularPreco()
+-        {
+-            valorEstacionamento = 500;
+-            faturamento += valorEstacionamento;
+-        }
+-    }
+-}
+diff --git a/Estacionamento/Estacionamento.Domain/EstacionamentoPernoite.cs b/Estacionamento/Estacionamento.Domain/EstacionamentoPernoite.cs
+deleted file mode 100644
+index d6e40c5..0000000
+--- a/Estacionamento/Estacionamento.Domain/EstacionamentoPernoite.cs
++++ /dev/null
+@@ -1,33 +0,0 @@
+-﻿using System;
+-
+-namespace Estacionamento.Domain
+-{
+-    public class EstacionamentoPernoite : Estacionamento
+-    {
+-        public EstacionamentoPernoite(String dataAcesso, String horaEntrada, String horaSaida, Veiculo v)
+-            : base(dataAcesso, horaEntrada, horaSaida, v) { }
+-
+-        
+-        public override void calcularPreco()
+-        {
+-            String[] HEsplit = this.hora_entrada.Split(":");
+-            int horaEntrada = int.Parse(HEsplit[0]);
+-            int minutoEntrada = int.Parse(HEsplit[1]);
+-            // Guardar hora e minuto de saida
+-
+-            String[] HSsplit = this.hora_saida.Split(":");
+-            int horaSaida = int.Parse(HSsplit[0]);
+-            int minutoSaida = int.Parse(HSsplit[1]);
+-
+-            // Converte para apenas minutos
+-            int tin = horaEntrada * 60 + minutoEntrada;
+-            int tout = horaSaida * 60 + minutoSaida;
+-
+-            float valorMinuto = 0.5f;
+-            valorEstacionamento = 30;
+-            valorEstacionamento += calculoEstadia(60 * 20 - tin, valorMinuto);
+-            valorEstacionamento += calculoEstadia(tout - 60 * 6, valorMinuto);
+-            faturamento += valorEstacionamento;
+-        }
+-    }
+-}
+diff --git a/Estacionamento/Estacionamento.Domain/DadosAcessoIncompletosException.cs b/Estacionamento/Estacionamento.Domain/Exceptions/DadosAcessoIncompletosException.cs
+similarity index 50%
+rename from Estacionamento/Estacionamento.Domain/DadosAcessoIncompletosException.cs
+rename to Estacionamento/Estacionamento.Domain/Exceptions/DadosAcessoIncompletosException.cs
+index 05538c9..d57e9be 100644
+--- a/Estacionamento/Estacionamento.Domain/DadosAcessoIncompletosException.cs
++++ b/Estacionamento/Estacionamento.Domain/Exceptions/DadosAcessoIncompletosException.cs
+@@ -1,10 +1,10 @@
+ ﻿using System;
+ 
+-namespace Estacionamento.Domain
++namespace Estacionamento.Domain.Exceptions
+ {
+     public class DadosAcessoIncompletosException : Exception
+     {
+-        public DadosAcessoIncompletosException(String errorMessage, Exception ex) : base(errorMessage, ex) { }
+-        public DadosAcessoIncompletosException(String errorMessage) : base(errorMessage) { }
++        public DadosAcessoIncompletosException(string errorMessage, Exception ex) : base(errorMessage, ex) { }
++        public DadosAcessoIncompletosException(string errorMessage) : base(errorMessage) { }
+     }
+ }
+diff --git a/Estacionamento/Estacionamento.Domain/DadosPessoaisIncompletosException.cs b/Estacionamento/Estacionamento.Domain/Exceptions/DadosPessoaisIncompletosException.cs
+similarity index 51%
+rename from Estacionamento/Estacionamento.Domain/DadosPessoaisIncompletosException.cs
+rename to Estacionamento/Estacionamento.Domain/Exceptions/DadosPessoaisIncompletosException.cs
+index 84c4378..7a56d47 100644
+--- a/Estacionamento/Estacionamento.Domain/DadosPessoaisIncompletosException.cs
++++ b/Estacionamento/Estacionamento.Domain/Exceptions/DadosPessoaisIncompletosException.cs
+@@ -1,10 +1,10 @@
+ ﻿using System;
+ 
+-namespace Estacionamento.Domain
++namespace Estacionamento.Domain.Exceptions
+ {
+     public class DadosPessoaisIncompletosException : Exception
+     {
+-        public DadosPessoaisIncompletosException (String errorMessage, Exception ex) : base(errorMessage, ex) { }
+-        public DadosPessoaisIncompletosException (String errorMessage) : base(errorMessage) { }
++        public DadosPessoaisIncompletosException (string errorMessage, Exception ex) : base(errorMessage, ex) { }
++        public DadosPessoaisIncompletosException (string errorMessage) : base(errorMessage) { }
+     }
+ }
+diff --git a/Estacionamento/Estacionamento.Domain/DadosVeiculosIncompletosException.cs b/Estacionamento/Estacionamento.Domain/Exceptions/DadosVeiculosIncompletosException.cs
+similarity index 51%
+rename from Estacionamento/Estacionamento.Domain/DadosVeiculosIncompletosException.cs
+rename to Estacionamento/Estacionamento.Domain/Exceptions/DadosVeiculosIncompletosException.cs
+index 380fc84..a9373c0 100644
+--- a/Estacionamento/Estacionamento.Domain/DadosVeiculosIncompletosException.cs
++++ b/Estacionamento/Estacionamento.Domain/Exceptions/DadosVeiculosIncompletosException.cs
+@@ -1,10 +1,10 @@
+ ﻿using System;
+ 
+-namespace Estacionamento.Domain
++namespace Estacionamento.Domain.Exceptions
+ {
+     public class DadosVeiculosIncompletosException : Exception
+     {
+-        public DadosVeiculosIncompletosException (String errorMessage, Exception ex) : base(errorMessage, ex) { }
+-        public DadosVeiculosIncompletosException (String errorMessage) : base(errorMessage) { }
++        public DadosVeiculosIncompletosException (string errorMessage, Exception ex) : base(errorMessage, ex) { }
++        public DadosVeiculosIncompletosException (string errorMessage) : base(errorMessage) { }
+     }
+ }
+diff --git a/Estacionamento/Estacionamento.Domain/Exceptions/EstacionamentoFechadoException.cs b/Estacionamento/Estacionamento.Domain/Exceptions/EstacionamentoFechadoException.cs
+new file mode 100644
+index 0000000..67acbf5
+--- /dev/null
++++ b/Estacionamento/Estacionamento.Domain/Exceptions/EstacionamentoFechadoException.cs
+@@ -0,0 +1,10 @@
++﻿using System;
++
++namespace Estacionamento.Domain.Exceptions
++{
++    public class EstacionamentoFechadoException : Exception
++    {
++        public EstacionamentoFechadoException (string errorMessage, Exception ex) : base(errorMessage, ex) { }
++        public EstacionamentoFechadoException (string errorMessage) : base(errorMessage) { }
++    }
++}
+diff --git a/Estacionamento/Estacionamento.Domain/Exceptions/PeriodoInvalidoException.cs b/Estacionamento/Estacionamento.Domain/Exceptions/PeriodoInvalidoException.cs
+new file mode 100644
+index 0000000..b8a7c2d
+--- /dev/null
++++ b/Estacionamento/Estacionamento.Domain/Exceptions/PeriodoInvalidoException.cs
+@@ -0,0 +1,10 @@
++﻿using System;
++
++namespace Estacionamento.Domain.Exceptions
++{
++    public class PeriodoInvalidoException : Exception
++    {
++        public PeriodoInvalidoException (string errorMessage, Exception ex) : base(errorMessage, ex) { }
++        public PeriodoInvalidoException (string errorMessage) : base(errorMessage) { }
++    }
++}
+diff --git a/Estacionamento/Estacionamento.Domain/PeriodoInvalidoException.cs b/Estacionamento/Estacionamento.Domain/PeriodoInvalidoException.cs
+deleted file mode 100644
+index 78d198d..0000000
+--- a/Estacionamento/Estacionamento.Domain/PeriodoInvalidoException.cs
++++ /dev/null
+@@ -1,10 +0,0 @@
+-﻿using System;
+-
+-namespace Estacionamento.Domain
+-{
+-    public class PeriodoInvalidoException : Exception
+-    {
+-        public PeriodoInvalidoException (String errorMessage, Exception ex) : base(errorMessage, ex) { }
+-        public PeriodoInvalidoException (String errorMessage) : base(errorMessage) { }
+-    }
+-}
+diff --git a/Estacionamento/Estacionamento.Domain/Proprietario.cs b/Estacionamento/Estacionamento.Domain/Proprietario.cs
+deleted file mode 100644
+index 4043c51..0000000
+--- a/Estacionamento/Estacionamento.Domain/Proprietario.cs
++++ /dev/null
+@@ -1,67 +0,0 @@
+-﻿using System;
+-
+-namespace Estacionamento.Domain
+-{
+-    public class Proprietario
+-    {
+-        private String nome;
+-        private String endereco;
+-        private int celular;
+-        private int telefone;
+-        private int cnh;
+-
+-        public String getNome()
+-        {
+-            return nome;
+-        }
+-        public void setNome(String nome)
+-        {
+-            this.nome = nome;
+-        }
+-
+-        public String getEndereco()
+-        {
+-            return endereco;
+-        }
+-        public void setEndereco(String endereco)
+-        {
+-            this.endereco = endereco;
+-        }
+-
+-        public int getCelular()
+-        {
+-            return celular;
+-        }
+-        public void setCelular(int celular)
+-        {
+-            this.celular = celular;
+-        }
+-
+-        public int getTelefone()
+-        {
+-            return telefone;
+-        }
+-        public void setTelefone(int telefone)
+-        {
+-            this.telefone = telefone;
+-        }
+-
+-        public int getCNH()
+-        {
+-            return cnh;
+-        }
+-        public void setCNH(int cnh)
+-        {
+-            this.cnh = cnh;
+-        }
+-
+-        public Proprietario(String nome, String endereco, int celular, int telefone, int cnh)
+-        {
+-            this.nome = nome;
+-            this.endereco = endereco;
+-            this.celular = celular;
+-            this.telefone = telefone;
+-            this.cnh = cnh;
+-        }
+-    }
+-}
+diff --git a/Estacionamento/Estacionamento.Domain/Veiculo.cs b/Estacionamento/Estacionamento.Domain/Veiculo.cs
+deleted file mode 100644
+index ab4092b..0000000
+--- a/Estacionamento/Estacionamento.Domain/Veiculo.cs
++++ /dev/null
+@@ -1,61 +0,0 @@
+-﻿using System;
+-
+-namespace Estacionamento.Domain
+-{
+-    public class Veiculo
+-    {
+-        private String marca;
+-        private String modelo;
+-        private String placa;
+-        private bool p;
+-
+-        private Proprietario proprietario;
+-
+-        public String getMarca()
+-        {
+-            return marca;
+-        }
+-        public void setMarca(String marca)
+-        {
+-            this.marca = marca;
+-        }
+-
+-        public String getModelo()
+-        {
+-            return modelo;
+-        }
+-        public void setModelo(String modelo)
+-        {
+-            this.modelo = modelo;
+-        }
+-
+-        public String getPlaca()
+-        {
+-            return placa;
+-        }
+-        public void setPlaca(String placa)
+-        {
+-            this.placa = placa;
+-        }
+-
+-        public Proprietario getProprietario()
+-        {
+-            return proprietario;
+-        }
+-        public void setProprietario(Proprietario p)
+-        {
+-            this.proprietario = p;
+-            this.p = true;
+-        }
+-
+-        //This is constructor of Veiculo Class
+-        public Veiculo(String marca, String modelo, String placa)
+-        {
+-            this.marca = marca;
+-            this.modelo = modelo;
+-            this.placa = placa;
+-            proprietario = null;
+-            this.p = false;
+-        }
+-    }
+-}
+diff --git a/Estacionamento/Estacionamento.sln b/Estacionamento/Estacionamento.sln
+index 61dbd46..0786829 100644
+--- a/Estacionamento/Estacionamento.sln
++++ b/Estacionamento/Estacionamento.sln
+@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Estacionamento.Domain", "Es
+ EndProject
+ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Estacionamento.App", "Estacionamento.Console\Estacionamento.App.csproj", "{87D4BCDA-BFB4-4B06-98EE-EA7138F6AA35}"
+ EndProject
++Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Estacionamento.Data", "Estacionamento.Data\Estacionamento.Data.csproj", "{2EE974E6-B5E0-48BA-B648-B5C76414B401}"
++EndProject
+ Global
+ 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+ 		Debug|Any CPU = Debug|Any CPU
+@@ -41,6 +43,18 @@ Global
+ 		{87D4BCDA-BFB4-4B06-98EE-EA7138F6AA35}.Release|x64.Build.0 = Release|Any CPU
+ 		{87D4BCDA-BFB4-4B06-98EE-EA7138F6AA35}.Release|x86.ActiveCfg = Release|Any CPU
+ 		{87D4BCDA-BFB4-4B06-98EE-EA7138F6AA35}.Release|x86.Build.0 = Release|Any CPU
++		{2EE974E6-B5E0-48BA-B648-B5C76414B401}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
++		{2EE974E6-B5E0-48BA-B648-B5C76414B401}.Debug|Any CPU.Build.0 = Debug|Any CPU
++		{2EE974E6-B5E0-48BA-B648-B5C76414B401}.Debug|x64.ActiveCfg = Debug|Any CPU
++		{2EE974E6-B5E0-48BA-B648-B5C76414B401}.Debug|x64.Build.0 = Debug|Any CPU
++		{2EE974E6-B5E0-48BA-B648-B5C76414B401}.Debug|x86.ActiveCfg = Debug|Any CPU
++		{2EE974E6-B5E0-48BA-B648-B5C76414B401}.Debug|x86.Build.0 = Debug|Any CPU
++		{2EE974E6-B5E0-48BA-B648-B5C76414B401}.Release|Any CPU.ActiveCfg = Release|Any CPU
++		{2EE974E6-B5E0-48BA-B648-B5C76414B401}.Release|Any CPU.Build.0 = Release|Any CPU
++		{2EE974E6-B5E0-48BA-B648-B5C76414B401}.Release|x64.ActiveCfg = Release|Any CPU
++		{2EE974E6-B5E0-48BA-B648-B5C76414B401}.Release|x64.Build.0 = Release|Any CPU
++		{2EE974E6-B5E0-48BA-B648-B5C76414B401}.Release|x86.ActiveCfg = Release|Any CPU
++		{2EE974E6-B5E0-48BA-B648-B5C76414B401}.Release|x86.Build.0 = Release|Any CPU
+ 	EndGlobalSection
+ 	GlobalSection(SolutionProperties) = preSolution
+ 		HideSolutionNode = FALSE
+-- 
+2.37.2.windows.2
+

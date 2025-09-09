@@ -1,0 +1,183 @@
+From 0f48fe76c52f9e6be5c5b0b9211c437dbd52252e Mon Sep 17 00:00:00 2001
+From: Marcos Felipe de Almeida Souza <u00334@brbseguros.com.br>
+Date: Mon, 1 Sep 2025 13:11:04 -0300
+Subject: [PATCH 4/6] =?UTF-8?q?feat(Estacionamento.Tests):=20Add=20estrutu?=
+ =?UTF-8?q?ra=20b=C3=A1sica=20do=20projeto=20de=20testes=20com=20teste=20u?=
+ =?UTF-8?q?nit=C3=A1rio=20e=20parametrizado=20para=20o=20fluxo=20de=20cada?=
+ =?UTF-8?q?stro=20de=20ve=C3=ADculo?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ Estacionamento/Dockerfile                     |  1 +
+ .../Estacionamento.Tests.csproj               | 26 ++++++++++++
+ .../Fixtures/Veiculo/VeiculoTestsFixture.cs   | 27 ++++++++++++
+ .../Unidade/Veiculo/AdicionarVeiculoTests.cs  | 41 +++++++++++++++++++
+ Estacionamento/Estacionamento.sln             | 14 +++++++
+ 5 files changed, 109 insertions(+)
+ create mode 100644 Estacionamento/Estacionamento.Tests/Estacionamento.Tests.csproj
+ create mode 100644 Estacionamento/Estacionamento.Tests/Fixtures/Veiculo/VeiculoTestsFixture.cs
+ create mode 100644 Estacionamento/Estacionamento.Tests/Unidade/Veiculo/AdicionarVeiculoTests.cs
+
+diff --git a/Estacionamento/Dockerfile b/Estacionamento/Dockerfile
+index c09d46c..353b606 100644
+--- a/Estacionamento/Dockerfile
++++ b/Estacionamento/Dockerfile
+@@ -4,6 +4,7 @@ WORKDIR /src
+ COPY Estacionamento.Console/Estacionamento.App.csproj Estacionamento.Console/
+ COPY Estacionamento.Domain/Estacionamento.Domain.csproj Estacionamento.Domain/
+ COPY Estacionamento.Data/Estacionamento.Data.csproj Estacionamento.Data/
++COPY Estacionamento.Tests/Estacionamento.Tests.csproj Estacionamento.Tests/
+ COPY Estacionamento.sln .
+ 
+ RUN dotnet restore Estacionamento.sln
+diff --git a/Estacionamento/Estacionamento.Tests/Estacionamento.Tests.csproj b/Estacionamento/Estacionamento.Tests/Estacionamento.Tests.csproj
+new file mode 100644
+index 0000000..d1f0bda
+--- /dev/null
++++ b/Estacionamento/Estacionamento.Tests/Estacionamento.Tests.csproj
+@@ -0,0 +1,26 @@
++<Project Sdk="Microsoft.NET.Sdk">
++
++  <PropertyGroup>
++    <TargetFramework>netcoreapp3.1</TargetFramework>
++
++    <IsPackable>false</IsPackable>
++  </PropertyGroup>
++
++  <ItemGroup>
++    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.3.2" />
++    <PackageReference Include="xunit" Version="2.4.2" />
++    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.5">
++      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
++      <PrivateAssets>all</PrivateAssets>
++    </PackageReference>
++    <PackageReference Include="coverlet.collector" Version="3.1.2">
++      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
++      <PrivateAssets>all</PrivateAssets>
++    </PackageReference>
++  </ItemGroup>
++
++  <ItemGroup>
++    <ProjectReference Include="..\Estacionamento.Domain\Estacionamento.Domain.csproj" />
++  </ItemGroup>
++
++</Project>
+diff --git a/Estacionamento/Estacionamento.Tests/Fixtures/Veiculo/VeiculoTestsFixture.cs b/Estacionamento/Estacionamento.Tests/Fixtures/Veiculo/VeiculoTestsFixture.cs
+new file mode 100644
+index 0000000..5b30866
+--- /dev/null
++++ b/Estacionamento/Estacionamento.Tests/Fixtures/Veiculo/VeiculoTestsFixture.cs
+@@ -0,0 +1,27 @@
++using System;
++using Xunit;
++using VeiculoModel = Estacionamento.Domain.Entidades.Veiculo;
++
++namespace Estacionamento.Tests.Fixtures.Veiculo
++{
++    [CollectionDefinition(nameof(VeiculoCollection))]
++    public class VeiculoCollection : ICollectionFixture<VeiculoTestsFixture> { }
++
++    public class VeiculoTestsFixture : IDisposable
++    {
++        public VeiculoModel VeiculoValido()
++        {
++            return new VeiculoModel
++            (
++                "TOYOTA",
++                "COROLA XEI 2020",
++                "ABCD-123"
++            );
++        }
++
++        public void Dispose()
++        {
++
++        }
++    }
++}
+\ No newline at end of file
+diff --git a/Estacionamento/Estacionamento.Tests/Unidade/Veiculo/AdicionarVeiculoTests.cs b/Estacionamento/Estacionamento.Tests/Unidade/Veiculo/AdicionarVeiculoTests.cs
+new file mode 100644
+index 0000000..c05a628
+--- /dev/null
++++ b/Estacionamento/Estacionamento.Tests/Unidade/Veiculo/AdicionarVeiculoTests.cs
+@@ -0,0 +1,41 @@
++using System.Collections.Generic;
++using Estacionamento.Tests.Fixtures.Veiculo;
++using Xunit;
++using VeiculoModel = Estacionamento.Domain.Entidades.Veiculo;
++
++namespace Estacionamento.Tests.Unidade.Veiculo
++{
++    [Collection(nameof(VeiculoCollection))]
++    public class AdicionarVeiculoTests
++    {
++        private readonly VeiculoTestsFixture _fixtures;
++
++        public AdicionarVeiculoTests(VeiculoTestsFixture fixture)
++        {
++            _fixtures = fixture;
++        }
++
++        [Fact(Skip = "Não implementado")]
++        [Trait("Veiculo", "Novo veículo válido")]
++        public void Veiculo_Adicionar_DeveSerValido()
++        {
++            var veiculo = _fixtures.VeiculoValido();
++            Assert.IsType<VeiculoModel>(veiculo);
++        }
++
++        [Theory(Skip = "Não implementado")]
++        [Trait("Veiculo", "Validações básicas ao adicionar veículo")]
++        [MemberData(nameof(CasosBasicos))]
++        public void Veiculo_Adicionar_DeveRealizarValidacoesBasicas(VeiculoModel veiculo, bool deveExecutarComSucesso)
++        {
++            Assert.IsType<VeiculoModel>(veiculo);
++            Assert.True(deveExecutarComSucesso);
++        }
++
++        public static IEnumerable<object[]> CasosBasicos()
++        {
++            using var fixture = new VeiculoTestsFixture();
++            yield return new object[] { fixture.VeiculoValido(), true };
++        }
++    }
++}
+\ No newline at end of file
+diff --git a/Estacionamento/Estacionamento.sln b/Estacionamento/Estacionamento.sln
+index 0786829..7c54a74 100644
+--- a/Estacionamento/Estacionamento.sln
++++ b/Estacionamento/Estacionamento.sln
+@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Estacionamento.App", "Estac
+ EndProject
+ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Estacionamento.Data", "Estacionamento.Data\Estacionamento.Data.csproj", "{2EE974E6-B5E0-48BA-B648-B5C76414B401}"
+ EndProject
++Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Estacionamento.Tests", "Estacionamento.Tests\Estacionamento.Tests.csproj", "{8531A137-04E2-4063-BF18-11AF2C4841BB}"
++EndProject
+ Global
+ 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+ 		Debug|Any CPU = Debug|Any CPU
+@@ -55,6 +57,18 @@ Global
+ 		{2EE974E6-B5E0-48BA-B648-B5C76414B401}.Release|x64.Build.0 = Release|Any CPU
+ 		{2EE974E6-B5E0-48BA-B648-B5C76414B401}.Release|x86.ActiveCfg = Release|Any CPU
+ 		{2EE974E6-B5E0-48BA-B648-B5C76414B401}.Release|x86.Build.0 = Release|Any CPU
++		{8531A137-04E2-4063-BF18-11AF2C4841BB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
++		{8531A137-04E2-4063-BF18-11AF2C4841BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
++		{8531A137-04E2-4063-BF18-11AF2C4841BB}.Debug|x64.ActiveCfg = Debug|Any CPU
++		{8531A137-04E2-4063-BF18-11AF2C4841BB}.Debug|x64.Build.0 = Debug|Any CPU
++		{8531A137-04E2-4063-BF18-11AF2C4841BB}.Debug|x86.ActiveCfg = Debug|Any CPU
++		{8531A137-04E2-4063-BF18-11AF2C4841BB}.Debug|x86.Build.0 = Debug|Any CPU
++		{8531A137-04E2-4063-BF18-11AF2C4841BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
++		{8531A137-04E2-4063-BF18-11AF2C4841BB}.Release|Any CPU.Build.0 = Release|Any CPU
++		{8531A137-04E2-4063-BF18-11AF2C4841BB}.Release|x64.ActiveCfg = Release|Any CPU
++		{8531A137-04E2-4063-BF18-11AF2C4841BB}.Release|x64.Build.0 = Release|Any CPU
++		{8531A137-04E2-4063-BF18-11AF2C4841BB}.Release|x86.ActiveCfg = Release|Any CPU
++		{8531A137-04E2-4063-BF18-11AF2C4841BB}.Release|x86.Build.0 = Release|Any CPU
+ 	EndGlobalSection
+ 	GlobalSection(SolutionProperties) = preSolution
+ 		HideSolutionNode = FALSE
+-- 
+2.37.2.windows.2
+

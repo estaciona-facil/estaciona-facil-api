@@ -1,0 +1,70 @@
+From 27ee221d1796134356e62210133210a93f90a806 Mon Sep 17 00:00:00 2001
+From: Marcos Felipe de Almeida Souza <u00334@brbseguros.com.br>
+Date: Mon, 1 Sep 2025 10:31:12 -0300
+Subject: [PATCH 3/6] feat(Docker*): Add estrutura basica de docker-compose e
+ ajuste dockerfile para classlib Data
+
+---
+ Estacionamento/Dockerfile         |  1 +
+ Estacionamento/docker-compose.yml | 36 +++++++++++++++++++++++++++++++
+ 2 files changed, 37 insertions(+)
+ create mode 100644 Estacionamento/docker-compose.yml
+
+diff --git a/Estacionamento/Dockerfile b/Estacionamento/Dockerfile
+index c26c259..c09d46c 100644
+--- a/Estacionamento/Dockerfile
++++ b/Estacionamento/Dockerfile
+@@ -3,6 +3,7 @@ WORKDIR /src
+ 
+ COPY Estacionamento.Console/Estacionamento.App.csproj Estacionamento.Console/
+ COPY Estacionamento.Domain/Estacionamento.Domain.csproj Estacionamento.Domain/
++COPY Estacionamento.Data/Estacionamento.Data.csproj Estacionamento.Data/
+ COPY Estacionamento.sln .
+ 
+ RUN dotnet restore Estacionamento.sln
+diff --git a/Estacionamento/docker-compose.yml b/Estacionamento/docker-compose.yml
+new file mode 100644
+index 0000000..f39e847
+--- /dev/null
++++ b/Estacionamento/docker-compose.yml
+@@ -0,0 +1,36 @@
++version: '3.8'
++
++
++services:
++  api_backend: 
++    container_name: api
++
++    build: 
++      context: ../Estacionamento
++      dockerfile: ./Dockerfile
++
++
++    networks:
++      - api-network
++
++    # depends_on:
++    #   - db
++
++  # db:
++  #   image: --
++  #   volume:
++  #     - db_data:
++  #   environment:
++  #     - DB_USER=admin
++  #     - DB_PASSWORD=admin
++  #     - DB_NAME=databaseName
++
++# volumes:
++  # db_data:
++  #   driver: local
++  # back_data:
++  #   driver: local
++
++networks:
++  api-network:
++    driver: bridge
+\ No newline at end of file
+-- 
+2.37.2.windows.2
+

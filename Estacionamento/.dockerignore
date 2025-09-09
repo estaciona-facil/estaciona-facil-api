@@ -1,0 +1,9 @@
+**/[b|B]in/
+**/[O|o]bj/
+.vs/
+*.suo
+*.user
+*.userprefs
+packages/
+*.env
+appsettings.Development.json

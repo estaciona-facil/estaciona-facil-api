@@ -1,0 +1,75 @@
+From 840e0bbe4016e878678bed73b2b145e572691d74 Mon Sep 17 00:00:00 2001
+From: Marcos Felipe de Almeida Souza <u00334@brbseguros.com.br>
+Date: Mon, 1 Sep 2025 14:31:02 -0300
+Subject: [PATCH 5/6] =?UTF-8?q?feat(docker-compose):=20Add=20servi=C3=A7o?=
+ =?UTF-8?q?=20de=20banco=20de=20dados=20no=20docker-compose?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ Estacionamento/docker-compose.yml | 38 ++++++++++++++++---------------
+ 1 file changed, 20 insertions(+), 18 deletions(-)
+
+diff --git a/Estacionamento/docker-compose.yml b/Estacionamento/docker-compose.yml
+index f39e847..95ee4d1 100644
+--- a/Estacionamento/docker-compose.yml
++++ b/Estacionamento/docker-compose.yml
+@@ -2,6 +2,20 @@ version: '3.8'
+ 
+ 
+ services:
++  db:
++    container_name: db-sqlserver
++    image: mcr.microsoft.com/mssql/server:2022-latest
++
++    ports:
++      - 1433:1433
++    environment:
++      - ACCEPT_EULA=Y
++      - MSSQL_SA_PASSWORD=admin@SqlServerDocker2025
++    networks:
++      - api-network
++    volumes:
++      - db_data:/var/opt/mssql
++
+   api_backend: 
+     container_name: api
+ 
+@@ -9,27 +23,15 @@ services:
+       context: ../Estacionamento
+       dockerfile: ./Dockerfile
+ 
+-
+     networks:
+       - api-network
+ 
+-    # depends_on:
+-    #   - db
+-
+-  # db:
+-  #   image: --
+-  #   volume:
+-  #     - db_data:
+-  #   environment:
+-  #     - DB_USER=admin
+-  #     - DB_PASSWORD=admin
+-  #     - DB_NAME=databaseName
+-
+-# volumes:
+-  # db_data:
+-  #   driver: local
+-  # back_data:
+-  #   driver: local
++    depends_on:
++      - db
++
++volumes:
++  db_data:
++    driver: local
+ 
+ networks:
+   api-network:
+-- 
+2.37.2.windows.2
+
