@@ -3,6 +3,7 @@ WORKDIR /src
 
 COPY Estacionamento.Console/Estacionamento.App.csproj Estacionamento.Console/
 COPY Estacionamento.Domain/Estacionamento.Domain.csproj Estacionamento.Domain/
+COPY Estacionamento.Data/Estacionamento.Data.csproj Estacionamento.Data/
 COPY Estacionamento.sln .
 
 RUN dotnet restore Estacionamento.sln

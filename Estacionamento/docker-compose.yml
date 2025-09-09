@@ -1,0 +1,36 @@
+version: '3.8'
+
+
+services:
+  api_backend: 
+    container_name: api
+
+    build: 
+      context: ../Estacionamento
+      dockerfile: ./Dockerfile
+
+
+    networks:
+      - api-network
+
+    # depends_on:
+    #   - db
+
+  # db:
+  #   image: --
+  #   volume:
+  #     - db_data:
+  #   environment:
+  #     - DB_USER=admin
+  #     - DB_PASSWORD=admin
+  #     - DB_NAME=databaseName
+
+# volumes:
+  # db_data:
+  #   driver: local
+  # back_data:
+  #   driver: local
+
+networks:
+  api-network:
+    driver: bridge
