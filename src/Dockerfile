@@ -11,6 +11,9 @@ RUN dotnet restore Estacionamento.sln
 
 COPY . .
 
+WORKDIR /src/Estacionamento.Tests
+RUN dotnet test .
+
 WORKDIR /src/Estacionamento.Api
 RUN dotnet publish -c Release -o /app/publish
 
