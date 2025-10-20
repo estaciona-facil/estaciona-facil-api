@@ -2,13 +2,13 @@ using Estacionamento.Domain.Entidades;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Estacionamento.Data.Context.Configurations
+namespace Estacionamento.Infra.Data.Context.Configurations
 {
     public class ProprietarioConfiguration : IEntityTypeConfiguration<Proprietario>
     {
         public void Configure(EntityTypeBuilder<Proprietario> builder)
         {
-            builder.ToTable("Proprietario");
+            builder.ToTable("Proprietarios");
 
             builder.HasKey("Id");
             builder.Property(x => x.Id)

@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Estacionamento.Domain.Entidades;
-using Estacionamento.Domain.Interfaces.Service;
+﻿using Estacionamento.Application.Interfaces.AppServices;
+using Estacionamento.Application.ViewModels;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 
 namespace Estacionamento.Api.Controllers
 {
@@ -13,26 +9,32 @@ namespace Estacionamento.Api.Controllers
     public class VeiculoController : ControllerBase
     {
         private readonly ILogger<VeiculoController> _logger;
-        private readonly IVeiculoService _service;
+        private readonly IVeiculoAppService _service;
 
-        public VeiculoController(IVeiculoService service, ILogger<VeiculoController> logger)
+        public VeiculoController(IVeiculoAppService service, ILogger<VeiculoController> logger)
         {
             _service = service;
             _logger = logger;
         }
 
         [HttpGet]
-        public async Task<IEnumerable<Veiculo>> ObterTodos()
+        public async Task<IEnumerable<VeiculoViewModel>> ObterTodos()
         {
             var retorno = await _service.ObterTodos();
             return retorno;
         }
 
-        [HttpGet("/{id}")]
-        public async Task<IEnumerable<Veiculo>> ObterTodos(Guid id)
+        [HttpGet("{id}")]
+        public async Task<VeiculoViewModel> ObterTodosPorId(Guid id)
         {
-            var retorno = await _service.ObterTodos();
+            var retorno = await _service.ObterPorId(id);
             return retorno;
+        }
+
+        [HttpPost]
+        public void Adicionar([FromBody] VeiculoViewModel veiculo)
+        {
+            _service.Adicionar(veiculo);
         }
     }
 }

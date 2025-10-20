@@ -2,7 +2,7 @@ using Estacionamento.Domain.Entidades.Estacionamento;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Estacionamento.Data.Context.Configurations
+namespace Estacionamento.Infra.Data.Context.Configurations
 {
     //public class EstacionamentoConfiguration : IEntityTypeConfiguration<EstacionamentoBasico>
     //{

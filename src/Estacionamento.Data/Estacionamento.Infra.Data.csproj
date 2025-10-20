@@ -20,4 +20,9 @@
     <ProjectReference Include="..\Estacionamento.Domain\Estacionamento.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Context\Migrations\" />
+    <Folder Include="Migrations\" />
+  </ItemGroup>
+
 </Project>

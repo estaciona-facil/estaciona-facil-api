@@ -1,50 +1,78 @@
-﻿using Estacionamento.Data.Context;
-using Estacionamento.Domain.DomainObjects;
-using Estacionamento.Domain.Interfaces.Repository.Data;
+﻿using Estacionamento.Domain.DomainObjects;
+using Estacionamento.Domain.Interfaces.Repository.Base;
+using Estacionamento.Infra.Data.Context;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.EntityFrameworkCore.Storage;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Threading.Tasks;
 
-namespace Estacionamento.Data.Repository
+namespace Estacionamento.Infra.Data.Repository
 {
-    public class BaseRepository<T> : IRepository<T> where T : class, IAggregateRoot
+    public abstract class BaseRepository<T> : IBaseEscritaRepository<T>, IBaseLeituraRepository<T> where T : class, IAggregateRoot
     {
-        protected readonly ApplicationContext _applicationContext;
-        protected readonly DbSet<T> _context;
+        protected DomainDbContext Contexto;
+        protected DbSet<T> Entidades;
+        private IDbContextTransaction _transacaoAtiva;
+        protected readonly string ConnectionStringContexto;
 
-        public BaseRepository(ApplicationContext context)
+        protected BaseRepository(DomainDbContext contexto)
         {
-            _applicationContext = context;
-            _context = _applicationContext.Set<T>();
+            Contexto = contexto;
+            Entidades = contexto.Set<T>();
+            ConnectionStringContexto = Contexto.Database.GetDbConnection().ConnectionString;
         }
 
-        public IUnityOfWork UnityOfWork => _applicationContext;
-
-        public async Task<IEnumerable<T>> ObterTodos()
+        public virtual async Task<T> Adicionar(T obj, bool aplicarAlteracoes = false)
         {
-            return await _context.AsNoTracking().ToListAsync();
+            EntityEntry<T> objRetorno = await Entidades.AddAsync(obj);
+            if (aplicarAlteracoes) await SaveChanges();
+            return objRetorno.Entity;
         }
 
-        public async Task<T> ObterPorId(Guid id)
+        public virtual async Task<IEnumerable<T>> ObterTodos()
         {
-            return await _context.AsNoTracking()
-                .FirstOrDefaultAsync(x => EF.Property<Guid>(x, "Id") == id);
+            return await Entidades.ToListAsync();
         }
 
-        public void Adicionar(T model)
+        public virtual async Task<T> ObterPorId(Guid id)
         {
-            _context.Add(model);
+            return await Entidades.FindAsync(id);
         }
 
-        public void Atualizar(T model)
+        public virtual async Task<int> SaveChanges()
         {
-            _context.Update(model);
+            return await Contexto.SaveChangesAsync();
         }
+
+        public virtual async Task BeginTran()
+        {
+            _transacaoAtiva = await Contexto.Database.BeginTransactionAsync();
+        }
+
+        public virtual async Task CommitTran()
+        {
+            if (_transacaoAtiva is null) return;
+            await _transacaoAtiva.CommitAsync();
+            _transacaoAtiva = null;
+        }
+
+        public virtual async Task RollbackTran()
+        {
+            if (_transacaoAtiva is null) return;
+            await _transacaoAtiva.RollbackAsync();
+            _transacaoAtiva = null;
+        }
+
+        protected IDbConnection RetornaNovaConexao() => Contexto.RetornaNovaConexao();
+        protected IDbConnection RetornaConexao() => Contexto.RetornaNovaConexao();
 
         public void Dispose()
         {
-            _applicationContext?.Dispose();
+            _transacaoAtiva?.Dispose();
+            Contexto.Dispose();
         }
     }
 }

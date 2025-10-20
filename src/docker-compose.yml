@@ -1,6 +1,17 @@
-version: '3.8'
-
 services:
+  api:
+    container_name: api
+    image: ${DOCKER_REGISTRY-}api
+    build:
+      context: .
+      dockerfile: Estacionamento.Api/Dockerfile
+
+    restart: always
+    networks:
+      - api-network
+    depends_on:
+      - db
+
   db:
     container_name: db-sqlserver
     image: mcr.microsoft.com/mssql/server:2022-latest
@@ -15,25 +26,8 @@ services:
     volumes:
       - db_data:/var/opt/mssql
 
-  api_backend: 
-    container_name: api
-
-    build: 
-      context: ../src
-      dockerfile: ./Dockerfile
-
-    ports:
-      - 5000:80
-    networks:
-      - api-network
-    depends_on:
-      - db
-
-
 volumes:
   db_data:
-    driver: local
-  app_data:
     driver: local
 
 networks:

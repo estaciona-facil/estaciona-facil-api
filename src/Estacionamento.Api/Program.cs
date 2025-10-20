@@ -1,27 +1,9 @@
-using Estacionamento.Data.Context;
-using Estacionamento.Data.Repository;
-using Estacionamento.Domain.Interfaces.Repository;
-using Estacionamento.Domain.Interfaces.Repository.Data;
-using Estacionamento.Domain.Interfaces.Service;
-using Estacionamento.Domain.Services;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
+using Estacionamento.Api;
 
-namespace Estacionamento.Api
-{
-    public class Program
-    {
-        public static void Main(string[] args)
-        {
-            CreateHostBuilder(args).Build().Run();
-        }
+var builder = WebApplication.CreateBuilder(args);
+var startup = new Startup(builder.Configuration);
+startup.ConfigureServices(builder.Services);
 
-       public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    webBuilder.UseStartup<Startup>();
-                });
-    }
-}
+var app = builder.Build();
+startup.Configure(app, app.Environment);
+app.Run();

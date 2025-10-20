@@ -1,12 +1,20 @@
 ﻿using Estacionamento.Domain.DomainObjects;
 using Estacionamento.Domain.DomainObjects.Validations;
+using Newtonsoft.Json;
 using System;
 
 namespace Estacionamento.Domain.Entidades
 {
     public class Veiculo : Entity, IAggregateRoot
     {
-        public Veiculo() { }
+        [JsonConstructor]
+        public Veiculo(string marca, string modelo, string placa, Guid proprietarioId)
+        {
+            Marca = marca;
+            Modelo = modelo;
+            Placa = placa;
+            ProprietarioId = proprietarioId;
+        }
 
         public Veiculo(string marca, string modelo, string placa) : base()
         {
@@ -16,6 +24,8 @@ namespace Estacionamento.Domain.Entidades
 
             Validar();
         }
+
+        public Veiculo() { }
 
         public string Marca { get; private set; }
         public string Modelo { get; private set; }
@@ -51,7 +61,6 @@ namespace Estacionamento.Domain.Entidades
             BaseValidations.ValidarExpressao(@"^[A-Z]{3}-\d{4}$|^[A-Z]{3}-[0-9][A-Z][0-9]{2}$", Placa, "");
             BaseValidations.ValidarSeVazio(Modelo, "");
             BaseValidations.ValidarSeVazio(Marca, "");
-            base.Validar();
         }
     }
 }
