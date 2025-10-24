@@ -16,8 +16,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Estacionamento.Application\Estacionamento.Application.csproj" />
-    <ProjectReference Include="..\Estacionamento.Data.IoC\Estacionamento.Infra.IoC.csproj" />
-    <ProjectReference Include="..\Estacionamento.Data\Estacionamento.Infra.Data.csproj" />
+    <ProjectReference Include="..\Estacionamento.Infra.Data\Estacionamento.Infra.Data.csproj" />
+    <ProjectReference Include="..\Estacionamento.Infra.IoC\Estacionamento.Infra.IoC.csproj" />
   </ItemGroup>
 
 </Project>

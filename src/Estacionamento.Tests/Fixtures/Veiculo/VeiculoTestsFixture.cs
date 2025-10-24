@@ -15,7 +15,8 @@ namespace Estacionamento.Tests.Fixtures.Veiculo
             (
                 "TOYOTA",
                 "COROLA XEI 2020",
-                "ABCD-123"
+                "ABCD-123",
+                Guid.NewGuid()
             );
         }
 

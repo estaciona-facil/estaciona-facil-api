@@ -14,7 +14,9 @@ WORKDIR /src
 COPY ["Estacionamento.Api/Estacionamento.Api.csproj", "Estacionamento.Api/"]
 COPY ["Estacionamento.Application/Estacionamento.Application.csproj", "Estacionamento.Application/"]
 COPY ["Estacionamento.Domain/Estacionamento.Domain.csproj", "Estacionamento.Domain/"]
-COPY ["Estacionamento.Infra/Estacionamento.Infra.Data.csproj", "Estacionamento.Infra/"]
+COPY ["Estacionamento.Infra.Data/Estacionamento.Infra.Data.csproj", "Estacionamento.Infra.Data/"]
+COPY ["Estacionamento.Infra.IoC/Estacionamento.Infra.IoC.csproj", "Estacionamento.Infra.IoC/"]
+COPY ["Estacionamento.Infra.CrossCutting/Estacionamento.Infra.CrossCutting.csproj", "Estacionamento.Infra.CrossCutting/"]
 RUN dotnet restore "./Estacionamento.Api/Estacionamento.Api.csproj"
 COPY . .
 WORKDIR "/src/Estacionamento.Api"

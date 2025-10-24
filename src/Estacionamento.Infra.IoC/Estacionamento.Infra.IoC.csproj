@@ -12,9 +12,9 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Estacionamento.Application\Estacionamento.Application.csproj" />
-    <ProjectReference Include="..\Estacionamento.Data\Estacionamento.Infra.Data.csproj" />
     <ProjectReference Include="..\Estacionamento.Domain\Estacionamento.Domain.csproj" />
     <ProjectReference Include="..\Estacionamento.Infra.CrossCutting\Estacionamento.Infra.CrossCutting.csproj" />
+    <ProjectReference Include="..\Estacionamento.Infra.Data\Estacionamento.Infra.Data.csproj" />
   </ItemGroup>
 
 </Project>
