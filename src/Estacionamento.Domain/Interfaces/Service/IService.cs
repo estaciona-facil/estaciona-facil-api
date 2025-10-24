@@ -10,7 +10,8 @@ namespace Estacionamento.Domain.Interfaces.Service
         Task<IEnumerable<T>> ObterTodos();
         Task<T> ObterPorId(Guid id);
 
-        void Adicionar(T veiculo, bool aplicarAlteracoes = false);
-        void Atualizar(T veiculo, bool aplicarAlteracoes = false);
+        Task Adicionar(T model, bool aplicarAlteracoes = false);
+        Task Atualizar(T model, bool aplicarAlteracoes = false);
+        Task Excluir(T model, bool aplicarAlteracoes = false);
     }
 }

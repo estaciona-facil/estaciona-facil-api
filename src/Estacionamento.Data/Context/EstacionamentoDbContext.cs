@@ -1,31 +1,30 @@
 using Estacionamento.Domain.Entidades;
 using Estacionamento.Domain.Interfaces.Context;
+using Estacionamento.Infra.CrossCutting.AppSettings;
 using Estacionamento.Infra.Data.Context.Configurations;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using System.Data;
 
 namespace Estacionamento.Infra.Data.Context
 {
     public class EstacionamentoDbContext : DomainDbContext, IEstacionamentoDbContext
     {
-
-        private static readonly string _connectionString = "Data source=db-sqlserver,1433\\sql1;Initial Catalog=EstacionamentoDB;User Id=sa;Password=admin@SqlServerDocker2025";
-
         public DbSet<Veiculo> Veiculos { get; set; }
         public DbSet<Proprietario> Proprietarios { get; set; }
 
-        public EstacionamentoDbContext()
-        : base(ObterContextOptions())
+        public EstacionamentoDbContext(IOptions<AppSettings> appSettings)
+        : base(ObterContextOptions(appSettings.Value))
         {
             ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
             ChangeTracker.AutoDetectChangesEnabled = false;
             ChangeTracker.LazyLoadingEnabled = false;
         }
 
-        private static DbContextOptions ObterContextOptions()
+        private static DbContextOptions ObterContextOptions(AppSettings appSettings)
         {
-            return new DbContextOptionsBuilder().UseSqlServer(_connectionString).Options;
+            return new DbContextOptionsBuilder().UseSqlServer(appSettings?.ConnectionStrings?.EstacionamentoDb ?? string.Empty).Options;
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

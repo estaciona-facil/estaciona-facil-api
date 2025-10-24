@@ -14,7 +14,7 @@ WORKDIR /src
 COPY ["Estacionamento.Api/Estacionamento.Api.csproj", "Estacionamento.Api/"]
 COPY ["Estacionamento.Application/Estacionamento.Application.csproj", "Estacionamento.Application/"]
 COPY ["Estacionamento.Domain/Estacionamento.Domain.csproj", "Estacionamento.Domain/"]
-COPY ["Estacionamento.Data/Estacionamento.Data.csproj", "Estacionamento.Data/"]
+COPY ["Estacionamento.Infra/Estacionamento.Infra.Data.csproj", "Estacionamento.Infra/"]
 RUN dotnet restore "./Estacionamento.Api/Estacionamento.Api.csproj"
 COPY . .
 WORKDIR "/src/Estacionamento.Api"

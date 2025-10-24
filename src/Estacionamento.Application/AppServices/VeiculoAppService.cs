@@ -29,14 +29,20 @@ namespace Estacionamento.Application.AppServices
             return Mapper.Map<IEnumerable<VeiculoViewModel>>(await _service.ObterTodos());
         }
 
-        public void Atualizar(VeiculoViewModel model)
+        public async Task Adicionar(VeiculoViewModel model)
         {
-            _service.Atualizar(Mapper.Map<Veiculo>(model));
+            await _service.Adicionar(Mapper.Map<Veiculo>(model), true);
         }
 
-        public void Adicionar(VeiculoViewModel model)
+        public async Task Atualizar(VeiculoViewModel model)
         {
-            _service.Adicionar(Mapper.Map<Veiculo>(model));
+            await _service.Atualizar(Mapper.Map<Veiculo>(model), true);
+        }
+
+        public async Task Excluir(Guid id)
+        {
+            var model = new VeiculoViewModel() { Id = id };
+            await _service.Excluir(Mapper.Map<Veiculo>(model), true);
         }
     }
 }

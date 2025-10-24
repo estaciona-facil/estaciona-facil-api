@@ -11,7 +11,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Estacionamento.Tests", "Est
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "3 - Estacionamento.Domain", "3 - Estacionamento.Domain", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "4 - Estacionamento.Data", "4 - Estacionamento.Data", "{D8B3EEC5-8FAE-4EE7-A383-E79DC83AEA4A}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "4 - Estacionamento.Infra", "4 - Estacionamento.Infra", "{D8B3EEC5-8FAE-4EE7-A383-E79DC83AEA4A}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "5 - Estacionamento.Tests", "5 - Estacionamento.Tests", "{A3C3CA66-EA05-4363-BC7E-D383BB73CFE1}"
 EndProject

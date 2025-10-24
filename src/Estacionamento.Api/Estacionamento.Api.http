@@ -1,4 +1,4 @@
-@Estacionamento.Api_HostAddress = http://localhost:56016
+@Estacionamento.Api_HostAddress = http://localhost:8080
 
 GET {{Estacionamento.Api_HostAddress}}/proprietario/
 Accept: application/json

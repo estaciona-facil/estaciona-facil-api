@@ -10,7 +10,8 @@ namespace Estacionamento.Application.Interfaces.AppServices.Base
         Task<IEnumerable<T>> ObterTodos();
         Task<T> ObterPorId(Guid id);
 
-        void Adicionar(T veiculo);
-        void Atualizar(T veiculo);
+        Task Adicionar(T veiculo);
+        Task Atualizar(T veiculo);
+        Task Excluir(Guid id);
     }
 }

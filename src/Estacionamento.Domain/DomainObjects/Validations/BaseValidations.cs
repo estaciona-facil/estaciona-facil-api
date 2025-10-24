@@ -30,12 +30,12 @@ namespace Estacionamento.Domain.DomainObjects.Validations
         }
 
 
-        public static void ValidarCaracteres(string value, int min, int max, string message)
+        public static void ValidarCaracteres(string value, int min, int max, string nomeDoAtributo)
         {
             var valueLenth = value.Trim().Length;
             if (valueLenth > max || valueLenth < min)
             {
-                throw new DomainException(message);
+                throw new DomainException($"O {nomeDoAtributo} deve conter entre {min} e {max} caracteres");
             }
         }
 

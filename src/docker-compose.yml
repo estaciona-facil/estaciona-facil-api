@@ -1,3 +1,5 @@
+name: estaciona-facil
+
 services:
   api:
     container_name: api

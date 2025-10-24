@@ -8,6 +8,7 @@ using Estacionamento.Domain.Interfaces.UoW;
 using Estacionamento.Domain.Interfaces.Utils;
 using Estacionamento.Domain.Services;
 using Estacionamento.Infra.CrossCutting;
+using Estacionamento.Infra.CrossCutting.AppSettings;
 using Estacionamento.Infra.Data.Context;
 using Estacionamento.Infra.Data.Repository;
 using Estacionamento.Infra.Data.UoW;
@@ -17,9 +18,9 @@ namespace Estacionamento.Infra.IoC
 {
     public static class Bootstrapper
     {
-        public static IServiceCollection ResolveDependencias(this IServiceCollection services)
+        public static IServiceCollection ResolveDependencias(this IServiceCollection services, AppSettings appSettings)
         {
-            services.RegistrarInjecaoDependenciasGerais();
+            services.RegistrarInjecaoDependenciasGerais(appSettings);
             services.RegistrarInjecaoDependenciasRepositories();
             services.RegistrarInjecaoDependenciasServicosDomain();
             services.RegistrarInjecaoDependenciasServicosDeAplicacao();
@@ -27,7 +28,7 @@ namespace Estacionamento.Infra.IoC
             return services;
         }
 
-        private static void RegistrarInjecaoDependenciasGerais(this IServiceCollection services)
+        private static void RegistrarInjecaoDependenciasGerais(this IServiceCollection services, AppSettings appSettings)
         {
             // AutoMapper
             services.AddAutoMapper(config =>

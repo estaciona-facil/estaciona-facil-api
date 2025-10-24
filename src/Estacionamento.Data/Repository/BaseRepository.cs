@@ -32,6 +32,20 @@ namespace Estacionamento.Infra.Data.Repository
             return objRetorno.Entity;
         }
 
+        public virtual async Task<T> Atualizar(T obj, bool aplicarAlteracoes = false)
+        {
+            EntityEntry<T> objRetorno = Entidades.Update(obj);
+            if (aplicarAlteracoes) await SaveChanges();
+            return objRetorno.Entity;
+        }
+
+        public virtual async Task<T> Excluir(T obj, bool aplicarAlteracoes = false)
+        {
+            EntityEntry<T> objRetorno = Entidades.Remove(obj);
+            if (aplicarAlteracoes) await SaveChanges();
+            return objRetorno.Entity;
+        }
+
         public virtual async Task<IEnumerable<T>> ObterTodos()
         {
             return await Entidades.ToListAsync();
@@ -67,7 +81,7 @@ namespace Estacionamento.Infra.Data.Repository
         }
 
         protected IDbConnection RetornaNovaConexao() => Contexto.RetornaNovaConexao();
-        protected IDbConnection RetornaConexao() => Contexto.RetornaNovaConexao();
+        protected IDbConnection RetornaConexao() => Contexto.RetornaConexao();
 
         public void Dispose()
         {

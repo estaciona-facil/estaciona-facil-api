@@ -10,7 +10,18 @@ namespace Estacionamento.Domain.DomainObjects
             Id = Guid.NewGuid();
         }
 
+        public Entity(Guid id)
+        {
+            DefinirId(id);
+        }
+
         public Guid Id { get; private set; }
+
+        public void DefinirId(Guid id)
+        {
+            BaseValidations.ValidarEhDiferente(id, Guid.Empty, MensagemDeCampoNaoInformadoOuInvalido(nameof(Id)));
+            Id = id;
+        }
 
         public override bool Equals(object obj)
         {
@@ -22,7 +33,7 @@ namespace Estacionamento.Domain.DomainObjects
             return base.Equals(obj);
         }
 
-        public static bool operator ==(Entity a, Entity b)
+        public static bool operator == (Entity a, Entity b)
         {
             if (ReferenceEquals(null, a) && ReferenceEquals(null, b))
                 return true;
@@ -48,9 +59,9 @@ namespace Estacionamento.Domain.DomainObjects
             return (GetType().GetHashCode() & 667)  + Id.GetHashCode();
         }
 
-        public virtual void Validar()
+        protected string MensagemDeCampoNaoInformadoOuInvalido(string campo)
         {
-            BaseValidations.ValidarEhDiferente(Id, Guid.Empty, "");
+            return $"O informação de {campo} é inválida ou não foi informada!";
         }
     }
 }

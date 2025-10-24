@@ -2,13 +2,14 @@
 using Estacionamento.Domain.DomainObjects.Validations;
 using Newtonsoft.Json;
 using System;
+using System.Drawing;
 
 namespace Estacionamento.Domain.Entidades
 {
     public class Veiculo : Entity, IAggregateRoot
     {
         [JsonConstructor]
-        public Veiculo(string marca, string modelo, string placa, Guid proprietarioId)
+        public Veiculo(Guid id, string marca, string modelo, string placa, Guid proprietarioId) : base(id)
         {
             Marca = marca;
             Modelo = modelo;
@@ -16,13 +17,17 @@ namespace Estacionamento.Domain.Entidades
             ProprietarioId = proprietarioId;
         }
 
-        public Veiculo(string marca, string modelo, string placa) : base()
+        public Veiculo(string marca, string modelo, string placa, Guid proprietarioId) : base()
         {
             DefinirPlaca(placa);
             DefinirMarca(marca);
             DefinirModelo(modelo);
+            DefinirProprietarioPorId(proprietarioId);
+        }
 
-            Validar();
+        public Veiculo(Guid id) 
+        {
+            DefinirId(id);
         }
 
         public Veiculo() { }
@@ -35,19 +40,25 @@ namespace Estacionamento.Domain.Entidades
         public Proprietario Proprietario { get; private set; }
 
 
-        public void DefinirMarca(string marca)
+        public void DefinirMarca(string valor)
         {
-            Marca = marca;
+            BaseValidations.ValidarSeVazio(valor, MensagemDeCampoNaoInformadoOuInvalido(nameof(Marca)));
+            BaseValidations.ValidarCaracteres(valor, 0, 50, nameof(Marca));
+            Marca = valor;
         }
 
-        public void DefinirModelo(string modelo)
+        public void DefinirModelo(string valor)
         {
-            Modelo = modelo;
+            BaseValidations.ValidarSeVazio(valor, MensagemDeCampoNaoInformadoOuInvalido(nameof(Modelo)));
+            BaseValidations.ValidarCaracteres(valor, 0, 100, nameof(Modelo));
+            Modelo = valor;
         }
 
-        public void DefinirPlaca(string placa)
+        public void DefinirPlaca(string valor)
         {
-            Placa = placa;
+            BaseValidations.ValidarSeVazio(valor, MensagemDeCampoNaoInformadoOuInvalido(nameof(Placa)));
+            BaseValidations.ValidarExpressao("[A-Z]{3}[0-9][0-9A-Z][0-9]{2}", valor, MensagemDeCampoNaoInformadoOuInvalido(nameof(Placa)));
+            Placa = valor;
         }
 
         public void DefinirProprietario(Proprietario proprietario)
@@ -56,11 +67,11 @@ namespace Estacionamento.Domain.Entidades
             ProprietarioId = proprietario.Id;
         }
 
-        public override void Validar()
+        public void DefinirProprietarioPorId(Guid proprietarioId)
         {
-            BaseValidations.ValidarExpressao(@"^[A-Z]{3}-\d{4}$|^[A-Z]{3}-[0-9][A-Z][0-9]{2}$", Placa, "");
-            BaseValidations.ValidarSeVazio(Modelo, "");
-            BaseValidations.ValidarSeVazio(Marca, "");
+
+            BaseValidations.ValidarEhDiferente(proprietarioId, Guid.Empty, MensagemDeCampoNaoInformadoOuInvalido(nameof(proprietarioId)));
+            ProprietarioId = proprietarioId;
         }
     }
 }

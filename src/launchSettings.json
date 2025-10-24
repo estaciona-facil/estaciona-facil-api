@@ -7,7 +7,7 @@
         "api": "StartDebugging"
       },
       "launchBrowser": true,
-      "launchUrl": ""
+      "launchUrl": "http://localhost:56016/swagger/index.html"
     }
   }
 }
