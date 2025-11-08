@@ -49,8 +49,6 @@ namespace Estacionamento.Api
                 {
                     c.SwaggerEndpoint("/swagger/v1/swagger.json", "Estacionamento API v1");
                 });
-
-                
             }
 
             //app.UseHttpsRedirection();
