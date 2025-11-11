@@ -2,9 +2,9 @@ using Estacionamento.Domain.Entidades;
 using Estacionamento.Domain.Interfaces.Context;
 using Estacionamento.Infra.CrossCutting.AppSettings;
 using Estacionamento.Infra.Data.Context.Configurations;
-using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using Npgsql;
 using System.Data;
 
 namespace Estacionamento.Infra.Data.Context
@@ -24,7 +24,7 @@ namespace Estacionamento.Infra.Data.Context
 
         private static DbContextOptions ObterContextOptions(AppSettings appSettings)
         {
-            return new DbContextOptionsBuilder().UseSqlServer(appSettings?.ConnectionStrings?.EstacionamentoDb ?? string.Empty).Options;
+            return new DbContextOptionsBuilder().UseNpgsql(appSettings?.ConnectionStrings?.EstacionamentoDb ?? string.Empty).Options;
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -41,12 +41,12 @@ namespace Estacionamento.Infra.Data.Context
         /// <returns>Uma instância da implementação de IDbConnection</returns>
         public override IDbConnection RetornaNovaConexao()
         {
-            return new SqlConnection(Database.GetDbConnection().ConnectionString);
+            return new NpgsqlConnection(Database.GetDbConnection().ConnectionString);
         }
 
         public override IDbConnection RetornaNovaConexao(string stringDeConexao)
         {
-            return new SqlConnection(stringDeConexao);
+            return new NpgsqlConnection(stringDeConexao);
         }
 
         /// <summary>

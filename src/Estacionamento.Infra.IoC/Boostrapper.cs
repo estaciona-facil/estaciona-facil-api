@@ -33,7 +33,6 @@ namespace Estacionamento.Infra.IoC
             // AutoMapper
             services.AddAutoMapper(config =>
             {
-                config.AddMaps(AppDomain.CurrentDomain.GetAssemblies());
                 config.AddProfile<DomainParaViewModelProfile>();
                 config.AddProfile<ViewModelParaDomainProfile>();
             });

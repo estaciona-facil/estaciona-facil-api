@@ -12,22 +12,34 @@ services:
     networks:
       - api-network
     depends_on:
-      - db
+      - db-estacionamento
 
-  db:
-    container_name: db-sqlserver
-    image: mcr.microsoft.com/mssql/server:2022-latest
-
+  db-estacionamento:
+    container_name: db-estacionamento
+    image: postgres:latest
+    restart: always
     ports:
-      - 1433:1433
+      - "5433:5432"
     environment:
-      - ACCEPT_EULA=Y
-      - MSSQL_SA_PASSWORD=admin@SqlServerDocker2025
+      - POSTGRES_DB=EstacionamentoDB
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
     networks:
       - api-network
-    volumes:
-      - db_data:/var/opt/mssql
 
+  pgadmin:
+    image: dpage/pgadmin4
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: marcosfas.dev@gmail.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "8080:80"
+    depends_on:
+      - db-estacionamento
+    networks:
+      - api-network
+ 
 volumes:
   db_data:
     driver: local

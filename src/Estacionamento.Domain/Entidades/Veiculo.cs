@@ -2,7 +2,6 @@
 using Estacionamento.Domain.DomainObjects.Validations;
 using Newtonsoft.Json;
 using System;
-using System.Drawing;
 
 namespace Estacionamento.Domain.Entidades
 {

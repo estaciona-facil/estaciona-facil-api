@@ -3,10 +3,9 @@ name: estaciona-facil
 services:
   api:
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=;http://+:80;http://+:443
+      - ASPNETCORE_ENVIRONMENT=Release
+      - ASPNETCORE_URLS=;http://+:443
     ports:
-      - "80"
       - "443"
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
