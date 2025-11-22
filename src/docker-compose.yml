@@ -1,33 +1,30 @@
-name: estaciona-facil
-
 services:
-  api:
-    container_name: api
-    image: ${DOCKER_REGISTRY-}api
+  estacionafacil.api:
+    container_name: estaciona.facil.api
+    image: ${DOCKER_REGISTRY-}estacionafacilapi
     build:
       context: .
-      dockerfile: Estacionamento.Api/Dockerfile
-
-    restart: always
-    networks:
-      - api-network
+      dockerfile: src/EstacionaFacil.Api/Dockerfile
     depends_on:
-      - db-estacionamento
+      - estaciona.facil.db
+    networks:
+      - estacionamento-network
 
-  db-estacionamento:
-    container_name: db-estacionamento
+  estaciona.facil.db:
+    container_name: estaciona.facil.db
     image: postgres:latest
     restart: always
     ports:
       - "5433:5432"
     environment:
-      - POSTGRES_DB=EstacionamentoDB
+      - POSTGRES_DB=EstacionaFacilDB
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
     networks:
-      - api-network
+      - estacionamento-network
 
   pgadmin:
+    container_name: estaciona.facil.pgadmin
     image: dpage/pgadmin4
     restart: always
     environment:
@@ -36,14 +33,14 @@ services:
     ports:
       - "8080:80"
     depends_on:
-      - db-estacionamento
+      - estaciona.facil.db
     networks:
-      - api-network
+      - estacionamento-network
  
 volumes:
   db_data:
     driver: local
 
 networks:
-  api-network:
+  estacionamento-network:
     driver: bridge

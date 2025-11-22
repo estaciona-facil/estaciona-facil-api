@@ -5,9 +5,10 @@
 project.lock.json
 .DS_Store
 *.pyc
+dotnet-install.sh
 
 # Visual Studio Code
-*.vscode
+.vscode
 
 # User-specific files
 *.suo
@@ -31,4 +32,4 @@ msbuild.err
 msbuild.wrn
 
 # Visual Studio 2015
-*.vs
+.vs/

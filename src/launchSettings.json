@@ -4,10 +4,8 @@
       "commandName": "DockerCompose",
       "commandVersion": "1.0",
       "serviceActions": {
-        "api": "StartDebugging"
-      },
-      "launchBrowser": true,
-      "launchUrl": "http://localhost:56016/swagger/index.html"
+        "estacionafacil.api": "StartDebugging"
+      }
     }
   }
 }

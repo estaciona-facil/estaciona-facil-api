@@ -1,0 +1,20 @@
+﻿using EstacionaFacil.Domain.Entities.Base;
+using EstacionaFacil.Domain.Interfaces.Repositories.Base;
+using EstacionaFacil.Domain.Interfaces.Services.Base;
+
+namespace EstacionaFacil.Domain.Services.Base
+{
+    public abstract class EntidadeDominioService<T> : Service<T>, IService<T> where T : EntidadeDominio
+    {
+        private readonly IEntidadeDominioRepository<T> _entidadeDominioRepository;
+        public EntidadeDominioService(IEntidadeDominioRepository<T> repository) : base(repository)
+        {
+            _entidadeDominioRepository = repository;
+        }
+
+        public Task<T?> ObterPorIdAsync(Guid id)
+        {
+            return _entidadeDominioRepository.ObterPorIdAsync(id);
+        }
+    }
+}
