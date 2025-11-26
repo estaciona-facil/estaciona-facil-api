@@ -20,9 +20,6 @@ builder.Services
 builder.Services.AddSwaggerGen();
 builder.Services.ResolveDependencias(appSettings);
 
-var app = builder.Build();
-
-
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("Default", policy =>
@@ -31,7 +28,7 @@ builder.Services.AddCors(options =>
               .AllowAnyMethod());
 });
 
-app.UseCors("Default");
+var app = builder.Build();
 
 app.UseSwagger();
 app.UseSwaggerUI();
@@ -51,8 +48,10 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
-
 app.UseHttpsRedirection();
+
+app.UseRouting();
+app.UseCors("Default");
 
 app.UseAuthorization();
 
