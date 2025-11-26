@@ -8,8 +8,9 @@ WORKDIR /src
 
 # COPY dos projetos para restore
 COPY ["src/EstacionaFacil.Api/EstacionaFacil.Api.csproj", "EstacionaFacil.Api/"]
-COPY ["src/EstacionaFacil.Infra.Data/EstacionaFacil.Infra.Data.csproj", "EstacionaFacil.Infra.Data/"]
 COPY ["src/EstacionaFacil.Domain/EstacionaFacil.Domain.csproj", "EstacionaFacil.Domain/"]
+COPY ["src/EstacionaFacil.Infra.Data/EstacionaFacil.Infra.Data.csproj", "EstacionaFacil.Infra.Data/"]
+COPY ["src/EstacionaFacil.Infra.IoC/EstacionaFacil.Infra.IoC.csproj", "EstacionaFacil.Infra.IoC/"]
 COPY ["src/EstacionaFacil.Infra.CrossCutting/EstacionaFacil.Infra.CrossCutting.csproj", "EstacionaFacil.Infra.CrossCutting/"]
 
 RUN dotnet restore "EstacionaFacil.Api/EstacionaFacil.Api.csproj"
