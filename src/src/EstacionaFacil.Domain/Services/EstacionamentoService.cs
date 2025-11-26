@@ -24,5 +24,11 @@ namespace EstacionaFacil.Domain.Services
             entidade.AdicionarValidacaoEntidade(_negocioService, new EstacionamentoValidator());
             return base.AtualizarAsync(entidade);
         }
+
+        public override async Task<Estacionamento?> ObterPorIdAsync(Guid id)
+        {
+            var retorno = await _repository.BuscarAsync(x => x.Id == id, x => x.Endereco);
+            return retorno.FirstOrDefault();
+        }
     }
 }
