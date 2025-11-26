@@ -7,7 +7,7 @@ on:
     
 env:
   AZURE_CONTAINER_REGISTRY: EstacionamentoApi
-  CONTAINER_APP_NAME: estaciona-facil-api
+  CONTAINER_APP_NAME: estacionafacilapi
   RESOURCE_GROUP: estaciona-facil
 
 jobs:
