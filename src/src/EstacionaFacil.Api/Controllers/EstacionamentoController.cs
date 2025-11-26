@@ -24,10 +24,19 @@ namespace EstacionaFacil.Api.Controllers
             return retorno;
         }
 
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Registro>> ObterPorIdAsync(Guid id)
+        {
+            var retorno = await _service.ObterPorIdAsync(id);
+            if (retorno is null) return BadRequest("Estacionamento não encontrado!");
+            return Ok(retorno);
+        }
+
         [HttpPost]
         public async Task<Estacionamento> AdicionarAsync([FromBody] Estacionamento entidade)
         {
             return await _service.AdicionarAsync(entidade);
         }
+
     }
 }
