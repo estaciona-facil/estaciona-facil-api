@@ -52,11 +52,8 @@ jobs:
       - name: Deploy to Azure Container Apps
         uses: azure/container-apps-deploy-action@v1
         with:
-           imageToDeploy: ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.CONTAINER_APP_NAME }}:${{ github.sha }}
-           resourceGroup: ${{ env.RESOURCE_GROUP }}
-           containerAppName: ${{ env.CONTAINER_APP_NAME }}
-           registryServer: ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io
-           registryUsername: ${{ secrets.AZURE_REGISTRY_USERNAME }}
-           registryPassword: ${{ secrets.AZURE_REGISTRY_PASSWORD }}
-           environmentVariables: |
+          imageToDeploy: ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.CONTAINER_APP_NAME }}:${{ github.sha }}
+          resourceGroup: ${{ env.RESOURCE_GROUP }}
+          containerAppName: ${{ env.CONTAINER_APP_NAME }}
+          environmentVariables: |
                 ASPNETCORE_ENVIRONMENT=Release
