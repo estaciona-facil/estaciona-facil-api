@@ -26,7 +26,7 @@ jobs:
       - name: Build and push image to ACR
         uses: docker/build-push-action@v5
         with:
-          context: ./src
+          context: ./src/src/EstacionaFacil.Api
           file: ./Dockerfile
           push: true
           tags: |
