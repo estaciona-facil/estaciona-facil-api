@@ -44,6 +44,7 @@ namespace EstacionaFacil.Infra.IoC
             services.AddScoped<IRegistroRepository, RegistroRepository>();
             services.AddScoped<IMarcaRepository, MarcaRepository>();
             services.AddScoped<IModeloRepository, ModeloRepository>();
+            services.AddScoped<IEnderecoRepository, EnderecoRepository>();
         }
 
         public static void RegistrarInjecaoDependenciasServicosDomain(this IServiceCollection services)
@@ -57,6 +58,7 @@ namespace EstacionaFacil.Infra.IoC
             services.AddScoped<IRegistroService, RegistroService>();
             services.AddScoped<IMarcaService, MarcaService>();
             services.AddScoped<IModeloService, ModeloService>();
+            services.AddScoped<IEnderecoService, EnderecoService>();
         }
 
         public static void RegistrarInjecaoDependenciasAppServices(this IServiceCollection services)
