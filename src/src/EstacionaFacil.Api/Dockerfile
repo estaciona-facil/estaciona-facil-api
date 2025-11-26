@@ -18,7 +18,7 @@ RUN dotnet restore "EstacionaFacil.Api/EstacionaFacil.Api.csproj"
 # copia todo o código agora que o restore está cacheado
 COPY . .
 
-WORKDIR "/src/EstacionaFacil.Api"
+WORKDIR "EstacionaFacil.Api"
 RUN dotnet build "EstacionaFacil.Api.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 FROM build AS publish
