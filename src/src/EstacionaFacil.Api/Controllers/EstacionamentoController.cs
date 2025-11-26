@@ -25,7 +25,7 @@ namespace EstacionaFacil.Api.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Registro>> ObterPorIdAsync(Guid id)
+        public async Task<ActionResult<Estacionamento>> ObterPorIdAsync(Guid id)
         {
             var retorno = await _service.ObterPorIdAsync(id);
             if (retorno is null) return BadRequest("Estacionamento não encontrado!");
