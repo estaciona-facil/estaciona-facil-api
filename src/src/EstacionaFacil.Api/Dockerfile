@@ -1,36 +1,29 @@
-# Acesse https://aka.ms/customizecontainer para saber como personalizar seu contêiner de depuração e como o Visual Studio usa este Dockerfile para criar suas imagens para uma depuração mais rápida.
-
-# Esta fase é usada durante a execução no VS no modo rápido (Padrão para a configuração de Depuração)
 FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS base
-USER $APP_UID
 WORKDIR /app
 EXPOSE 80
 
-
-# Esta fase é usada para compilar o projeto de serviço
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["src/EstacionaFacil.Api/EstacionaFacil.Api.csproj", "src/EstacionaFacil.Api/"]
-COPY ["src/EstacionaFacil.Infra.Data/EstacionaFacil.Infra.Data.csproj", "src/EstacionaFacil.Infra.Data/"]
-COPY ["src/EstacionaFacil.Domain/EstacionaFacil.Domain.csproj", "src/EstacionaFacil.Domain/"]
-COPY ["src/EstacionaFacil.Infra.CrossCutting/EstacionaFacil.Infra.CrossCutting.csproj", "src/EstacionaFacil.Infra.CrossCutting/"]
-#COPY ["src/EstacionaFacil.Tests/EstacionaFacil.Tests.csproj", "src/EstacionaFacil.Tests/"]
-RUN dotnet restore "./src/EstacionaFacil.Api/EstacionaFacil.Api.csproj"
+
+# COPY dos projetos para restore
+COPY ["EstacionaFacil.Api/EstacionaFacil.Api.csproj", "EstacionaFacil.Api/"]
+COPY ["EstacionaFacil.Infra.Data/EstacionaFacil.Infra.Data.csproj", "EstacionaFacil.Infra.Data/"]
+COPY ["EstacionaFacil.Domain/EstacionaFacil.Domain.csproj", "EstacionaFacil.Domain/"]
+COPY ["EstacionaFacil.Infra.CrossCutting/EstacionaFacil.Infra.CrossCutting.csproj", "EstacionaFacil.Infra.CrossCutting/"]
+
+RUN dotnet restore "EstacionaFacil.Api/EstacionaFacil.Api.csproj"
+
+# copia todo o código agora que o restore está cacheado
 COPY . .
 
-#RUN dotnet test "src/EstacionaFacil.Tests/EstacionaFacil.Tests.csproj"
+WORKDIR "/src/EstacionaFacil.Api"
+RUN dotnet build "EstacionaFacil.Api.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
-
-WORKDIR "/src/src/EstacionaFacil.Api"
-RUN dotnet build "./EstacionaFacil.Api.csproj" -c $BUILD_CONFIGURATION -o /app/build
-
-# Esta fase é usada para publicar o projeto de serviço a ser copiado para a fase final
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./EstacionaFacil.Api.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "EstacionaFacil.Api.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
-# Esta fase é usada na produção ou quando executada no VS no modo normal (padrão quando não está usando a configuração de Depuração)
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
