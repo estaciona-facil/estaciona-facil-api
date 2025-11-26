@@ -40,7 +40,7 @@ jobs:
         with:
           push: true
           tags: ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.CONTAINER_APP_NAME }}:${{ github.sha }}
-          context: ./src/src/EstacionaFacil.Api
+          context: ./src/src
           file: ./src/src/EstacionaFacil.Api/Dockerfile
 
 
