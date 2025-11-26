@@ -2,8 +2,14 @@
 
 namespace EstacionaFacil.Domain.Entities
 {
-    public class Estacionamento : EntidadeDominio
+    public class Estacionamento : EntidadeDominio<Estacionamento>
     {
-        public decimal MtrValorHora { get; set; }
+        public Estacionamento() : base() { }
+        public Estacionamento(decimal mtrValorHora) : base()
+        {
+            MtrValorHora = mtrValorHora;
+        }
+
+        public decimal? MtrValorHora { get; set; }
     }
 }

@@ -9,7 +9,7 @@ using System.Linq.Expressions;
 
 namespace EstacionaFacil.Infra.Data.Repositories.Base
 {
-    public abstract class Repository<T> : IDisposable, IRepository<T> where T : Entidade
+    public abstract class Repository<T> : IDisposable, IRepository<T> where T : Entidade<T>
     {
         protected DomainDbContext Contexto;
         protected DbSet<T> Entidades;
@@ -26,6 +26,19 @@ namespace EstacionaFacil.Infra.Data.Repositories.Base
         public async Task<IEnumerable<T>> BuscarAsync(Expression<Func<T, bool>> where)
         {
             return await Entidades.Where(where).ToListAsync();
+        }
+
+        public async Task<IEnumerable<T>> BuscarAsync(Expression<Func<T, bool>> where, string[] includes)
+        {
+            IQueryable<T> query = Entidades;
+
+            foreach (var include in includes)
+            {
+                try { query = query.Include(include); }
+                catch (Exception) { }
+            }
+
+            return await query.Where(where).ToListAsync();
         }
 
         public async Task<IEnumerable<T>> ObterTodosAsync()

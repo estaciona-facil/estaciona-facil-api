@@ -2,8 +2,13 @@
 
 namespace EstacionaFacil.Domain.Entities
 {
-    public class Veiculo : EntidadeDominio 
+    public class Veiculo : EntidadeDominio<Veiculo> 
     {
+        public Veiculo(string placa) 
+        {
+            Placa = placa;
+        }
+
         public string? Placa { get; set; }
 
         public int? ModeloId { get; set; } = null;

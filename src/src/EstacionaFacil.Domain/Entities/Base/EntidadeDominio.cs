@@ -1,6 +1,6 @@
 ﻿namespace EstacionaFacil.Domain.Entities.Base
 {
-    public abstract class EntidadeDominio : Entidade
+    public abstract class EntidadeDominio<T> : Entidade<T>
     {
         public EntidadeDominio()
         {

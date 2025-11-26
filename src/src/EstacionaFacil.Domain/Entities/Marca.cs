@@ -2,5 +2,9 @@
 
 namespace EstacionaFacil.Domain.Entities
 {
-    public class Marca : EntidadeDescricao { }
+    public class Marca : EntidadeDescricao<Marca> 
+    { 
+        public Marca() : base() { }
+        public Marca(string descricao) : base(descricao) { }
+    }
 }

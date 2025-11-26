@@ -4,10 +4,10 @@ using EstacionaFacil.Domain.Interfaces.Services.Base;
 
 namespace EstacionaFacil.Domain.Services.Base
 {
-    public abstract class EntidadeDescricaoService<T> : Service<T>, IService<T> where T : EntidadeDescricao
+    public abstract class EntidadeDescricaoService<T> : Service<T>, IService<T> where T : EntidadeDescricao<T>
     {
         private readonly IEntidadeDescricaoRepository<T> _entidadeDescricaoRepository;
-        public EntidadeDescricaoService(IEntidadeDescricaoRepository<T> repository) : base(repository) 
+        public EntidadeDescricaoService(IEntidadeDescricaoRepository<T> repository, NegocioService negocioService) : base(repository, negocioService) 
         {
             _entidadeDescricaoRepository = repository;
         }

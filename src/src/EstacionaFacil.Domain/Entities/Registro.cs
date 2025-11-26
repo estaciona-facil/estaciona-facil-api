@@ -2,7 +2,7 @@
 
 namespace EstacionaFacil.Domain.Entities
 {
-    public class Registro : EntidadeRelacionamento
+    public class Registro : EntidadeRelacionamento<Registro>
     {
         public Registro(Guid veiculoId, Guid estacionamentoId)
         {
@@ -25,8 +25,17 @@ namespace EstacionaFacil.Domain.Entities
             return (DataSaida.Value - DataEntrada.Value).TotalMinutes;
         }
 
-        public void RegistrarEntrada() { DataEntrada = DateTime.UtcNow; }
-        public void RegistrarSaida() { DataSaida = DateTime.UtcNow; }
+        public Registro RegistrarEntrada() 
+        { 
+            DataEntrada = DateTime.UtcNow;
+            return this;
+        }
+
+        public Registro RegistrarSaida() 
+        { 
+            DataSaida = DateTime.UtcNow;
+            return this;
+        }
 
         public override void LimparRelacionamentos()
         {
