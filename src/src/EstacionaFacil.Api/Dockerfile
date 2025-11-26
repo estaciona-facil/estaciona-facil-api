@@ -16,8 +16,13 @@ COPY ["src/EstacionaFacil.Api/EstacionaFacil.Api.csproj", "src/EstacionaFacil.Ap
 COPY ["src/EstacionaFacil.Infra.Data/EstacionaFacil.Infra.Data.csproj", "src/EstacionaFacil.Infra.Data/"]
 COPY ["src/EstacionaFacil.Domain/EstacionaFacil.Domain.csproj", "src/EstacionaFacil.Domain/"]
 COPY ["src/EstacionaFacil.Infra.CrossCutting/EstacionaFacil.Infra.CrossCutting.csproj", "src/EstacionaFacil.Infra.CrossCutting/"]
+COPY ["src/EstacionaFacil.Tests/EstacionaFacil.Tests.csproj", "src/EstacionaFacil.Tests/"]
 RUN dotnet restore "./src/EstacionaFacil.Api/EstacionaFacil.Api.csproj"
 COPY . .
+
+WORKDIR "/src/src/Estacionamento.Tests"
+RUN dotnet test
+
 WORKDIR "/src/src/EstacionaFacil.Api"
 RUN dotnet build "./EstacionaFacil.Api.csproj" -c $BUILD_CONFIGURATION -o /app/build
 

@@ -2,7 +2,7 @@
 
 namespace EstacionaFacil.Domain.Interfaces.Repositories.Base
 {
-    public interface IEntidadeDescricaoRepository<T> : IRepository<T> where T : EntidadeDescricao
+    public interface IEntidadeDescricaoRepository<T> : IRepository<T> where T : EntidadeDescricao<T>
     {
         Task<T?> ObterPorIdAsync(int id);
     }

@@ -21,6 +21,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EstacionaFacil.Api", "src\E
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{81DDED9D-158B-E303-5F62-77A2896D2A5A}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "EstacionaFacil.Test", "EstacionaFacil.Test", "{34B1618A-BE6F-4350-ADEF-CF5A83894171}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EstacionaFacil.Tests", "src\EstacionaFacil.Tests\EstacionaFacil.Tests.csproj", "{4A8F5936-5463-4977-BC17-06DBE7F056AB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,6 +55,10 @@ Global
 		{81DDED9D-158B-E303-5F62-77A2896D2A5A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{81DDED9D-158B-E303-5F62-77A2896D2A5A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{81DDED9D-158B-E303-5F62-77A2896D2A5A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4A8F5936-5463-4977-BC17-06DBE7F056AB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4A8F5936-5463-4977-BC17-06DBE7F056AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4A8F5936-5463-4977-BC17-06DBE7F056AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4A8F5936-5463-4977-BC17-06DBE7F056AB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -61,6 +69,7 @@ Global
 		{B2C12A79-5564-4FAF-8E30-1B2185A75A6C} = {562782EE-B5B3-45BE-996E-0BF66159034D}
 		{DD4BFEF9-293E-4C4F-969A-B8811941A5C3} = {44E490BF-2EDA-4C2D-9873-9BF037FA4B0D}
 		{3D091CAB-56B2-414C-A9AE-D6A498B1F471} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{4A8F5936-5463-4977-BC17-06DBE7F056AB} = {34B1618A-BE6F-4350-ADEF-CF5A83894171}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {14E093CC-1188-4874-BA45-F6E4E0BE98B0}

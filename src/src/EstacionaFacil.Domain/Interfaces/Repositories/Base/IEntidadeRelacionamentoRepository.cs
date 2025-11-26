@@ -2,7 +2,7 @@
 
 namespace EstacionaFacil.Domain.Interfaces.Repositories.Base
 {
-    public interface IEntidadeRelacionamentoRepository<T> : IRepository<T> where T : EntidadeRelacionamento
+    public interface IEntidadeRelacionamentoRepository<T> : IRepository<T> where T : EntidadeRelacionamento<T>
     {
     }
 }

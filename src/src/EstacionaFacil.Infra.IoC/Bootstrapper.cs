@@ -1,11 +1,14 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using EstacionaFacil.Domain.Interfaces.Context;
+﻿using EstacionaFacil.Domain.Interfaces.Context;
+using EstacionaFacil.Domain.Interfaces.Notificador;
 using EstacionaFacil.Domain.Interfaces.Repositories;
 using EstacionaFacil.Domain.Interfaces.Services;
+using EstacionaFacil.Domain.Notificador;
 using EstacionaFacil.Domain.Services;
+using EstacionaFacil.Domain.Services.Base;
 using EstacionaFacil.Infra.CrossCutting.AppSettings;
 using EstacionaFacil.Infra.Data.Context;
 using EstacionaFacil.Infra.Data.Repositories;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace EstacionaFacil.Infra.IoC
 {
@@ -45,6 +48,9 @@ namespace EstacionaFacil.Infra.IoC
 
         public static void RegistrarInjecaoDependenciasServicosDomain(this IServiceCollection services)
         {
+            services.AddScoped<NegocioService>();
+            services.AddScoped<INotificador, Notificador>();
+
             services.AddScoped<IProprietarioService, ProprietarioService>();
             services.AddScoped<IVeiculoService, VeiculoService>();
             services.AddScoped<IEstacionamentoService, EstacionamentoService>();

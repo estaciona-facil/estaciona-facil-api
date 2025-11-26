@@ -35,5 +35,13 @@ namespace EstacionaFacil.Api.Controllers
         {
             return await _service.RegistrarEventoPorPlacaAsync(estacionamentoId, placa);
         }
+
+        [HttpGet("{estacionamentoId}/{placa}")]
+        public async Task<ActionResult<Registro>> ObterPelaPlacaAsync(Guid estacionamentoId, string placa)
+        {
+            var retorno = await _service.ObterPelaPlacaAsync(estacionamentoId, placa);
+            if (retorno is null) return BadRequest("Veículo não encontrado!");
+            return Ok(retorno);
+        }
     }
 }

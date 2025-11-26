@@ -3,7 +3,7 @@ using EstacionaFacil.Domain.Entities.Base;
 using EstacionaFacil.Domain.Interfaces.Repositories.Base;
 namespace EstacionaFacil.Infra.Data.Repositories.Base
 {
-    public abstract class EntidadeDominioRepository<T> : Repository<T>, IDisposable, IEntidadeDominioRepository<T> where T : EntidadeDominio
+    public abstract class EntidadeDominioRepository<T> : Repository<T>, IDisposable, IEntidadeDominioRepository<T> where T : EntidadeDominio<T>
     {
         protected EntidadeDominioRepository(DomainDbContext contexto) : base(contexto) { }
 

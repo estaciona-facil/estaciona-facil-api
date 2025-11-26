@@ -3,7 +3,7 @@ using System.Linq.Expressions;
 
 namespace EstacionaFacil.Domain.Interfaces.Services.Base
 {
-    public interface IService<T> where T : Entidade
+    public interface IService<T> where T : Entidade<T>
     {
         Task<IEnumerable<T>> ObterTodosAsync();
         Task<IEnumerable<T>> BuscarAsync(Expression<Func<T, bool>> where);

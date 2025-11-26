@@ -2,37 +2,61 @@
 using EstacionaFacil.Domain.Interfaces.Repositories;
 using EstacionaFacil.Domain.Interfaces.Services;
 using EstacionaFacil.Domain.Services.Base;
+using EstacionaFacil.Domain.Utils;
+using EstacionaFacil.Domain.Validations;
 
 namespace EstacionaFacil.Domain.Services
 {
     public class RegistroService : EntidadeRelacionamentoService<Registro>, IRegistroService
     {
-        private readonly IVeiculoRepository _veiculoRepository;
-        public RegistroService(IVeiculoRepository veiculoRepository, IRegistroRepository repository) : base(repository) 
+        private readonly IVeiculoService _veiculoService;
+        public RegistroService(IVeiculoService veiculoService, IRegistroRepository repository, NegocioService negocioService) : base(repository, negocioService) 
         {
-            _veiculoRepository = veiculoRepository;
+            _veiculoService = veiculoService;
         }
-
 
         public async Task<Registro> RegistrarEventoPorPlacaAsync(Guid estacionamentoId, string placa)
         {
-            var veiculo = (await _veiculoRepository.BuscarAsync(x => x.Placa == placa)).FirstOrDefault();
+            var veiculo = (await _veiculoService.BuscarAsync(x => x.Placa == placa)).FirstOrDefault();
             if (veiculo is null || veiculo.Id == Guid.Empty)
             {
-                veiculo = await _veiculoRepository.AdicionarAsync(new Veiculo() { Placa = placa });
+                veiculo = new Veiculo(placa);
+                veiculo = await _veiculoService.AdicionarAsync(veiculo);
             }
 
             var registro = (await _repository.BuscarAsync(x => x.EstacionamentoId.Equals(estacionamentoId) && x.VeiculoId.Equals(veiculo.Id)))
                 .FirstOrDefault() ?? new Registro(veiculo.Id, estacionamentoId);
 
             if (registro.DataEntrada is null)
-            {
-                registro.RegistrarEntrada();
-                return await _repository.AdicionarAsync(new Registro(veiculo.Id, estacionamentoId));
-            }
+                return await AdicionarAsync(registro.RegistrarEntrada());
 
-            registro.RegistrarSaida();
-            return await _repository.AtualizarAsync(registro);
+
+            return await AtualizarAsync(registro.RegistrarSaida());
+        }
+
+        public async Task<Registro> ObterPelaPlacaAsync(Guid estacionamentoId, string placa)
+        {
+            var retorno = await _repository.BuscarAsync(
+                x => x.EstacionamentoId == estacionamentoId
+                    && x.Veiculo != null
+                    && x.Veiculo.Placa == placa
+                , ["Veiculo"]
+            );
+
+            return retorno.First();
+        }
+
+
+        public override Task<Registro> AdicionarAsync(Registro entidade)
+        {
+            entidade.AdicionarValidacaoEntidade(_negocioService, new RegistroValidator());
+            return base.AdicionarAsync(entidade);
+        }
+
+        public override Task<Registro> AtualizarAsync(Registro entidade)
+        {
+            entidade.AdicionarValidacaoEntidade(_negocioService, new RegistroValidator());
+            return base.AtualizarAsync(entidade);
         }
     }
 }
