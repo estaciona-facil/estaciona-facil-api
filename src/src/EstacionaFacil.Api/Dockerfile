@@ -7,10 +7,10 @@ ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 
 # COPY dos projetos para restore
-COPY ["EstacionaFacil.Api/EstacionaFacil.Api.csproj", "EstacionaFacil.Api/"]
-COPY ["EstacionaFacil.Infra.Data/EstacionaFacil.Infra.Data.csproj", "EstacionaFacil.Infra.Data/"]
-COPY ["EstacionaFacil.Domain/EstacionaFacil.Domain.csproj", "EstacionaFacil.Domain/"]
-COPY ["EstacionaFacil.Infra.CrossCutting/EstacionaFacil.Infra.CrossCutting.csproj", "EstacionaFacil.Infra.CrossCutting/"]
+COPY ["src/EstacionaFacil.Api/EstacionaFacil.Api.csproj", "EstacionaFacil.Api/"]
+COPY ["src/EstacionaFacil.Infra.Data/EstacionaFacil.Infra.Data.csproj", "EstacionaFacil.Infra.Data/"]
+COPY ["src/EstacionaFacil.Domain/EstacionaFacil.Domain.csproj", "EstacionaFacil.Domain/"]
+COPY ["src/EstacionaFacil.Infra.CrossCutting/EstacionaFacil.Infra.CrossCutting.csproj", "EstacionaFacil.Infra.CrossCutting/"]
 
 RUN dotnet restore "EstacionaFacil.Api/EstacionaFacil.Api.csproj"
 
