@@ -40,7 +40,10 @@ namespace EstacionaFacil.Domain.Services
             var retorno = await _repository.BuscarAsync(
                 x => x.Veiculo != null
                     && x.Veiculo.Placa == placa
-                , x => x.Veiculo
+                , 
+                x => x.Veiculo,
+                x => x.Veiculo.Modelo,
+                x => x.Veiculo.Modelo.Marca
             );
 
             return retorno.FirstOrDefault();
