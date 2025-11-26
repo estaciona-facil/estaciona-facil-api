@@ -34,7 +34,7 @@ jobs:
       - name: Build and push container image to registry
         uses: azure/container-apps-deploy-action@v2
         with:
-          appSourcePath: ${{ github.workspace }}/src/src/EstacionaFacil.Api
+          appSourcePath: ${{ github.workspace }}/src/src
           _dockerfilePathKey_: _dockerfilePath_
           _targetLabelKey_: _targetLabel_
           registryUrl: estacionamentoapi.azurecr.io
@@ -45,5 +45,6 @@ jobs:
           imageToBuild: estacionamentoapi.azurecr.io/estaciona-facil-api:${{ github.sha }}
           _buildArgumentsKey_: |
             _buildArgumentsValues_
+
 
 
