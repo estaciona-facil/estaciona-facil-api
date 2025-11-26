@@ -10,7 +10,7 @@ namespace EstacionaFacil.Domain.Services
     public class RegistroService : EntidadeRelacionamentoService<Registro>, IRegistroService
     {
         private readonly IVeiculoService _veiculoService;
-        public RegistroService(IVeiculoService veiculoService, IRegistroRepository repository, NegocioService negocioService) : base(repository, negocioService) 
+        public RegistroService(IVeiculoService veiculoService, IRegistroRepository repository, NegocioService negocioService) : base(repository, negocioService)
         {
             _veiculoService = veiculoService;
         }
@@ -34,11 +34,10 @@ namespace EstacionaFacil.Domain.Services
             return await AtualizarAsync(registro.RegistrarSaida());
         }
 
-        public async Task<Registro> ObterPelaPlacaAsync(Guid estacionamentoId, string placa)
+        public async Task<Registro> ObterPelaPlacaAsync(string placa)
         {
             var retorno = await _repository.BuscarAsync(
-                x => x.EstacionamentoId == estacionamentoId
-                    && x.Veiculo != null
+                x => x.Veiculo != null
                     && x.Veiculo.Placa == placa
                 , ["Veiculo"]
             );
