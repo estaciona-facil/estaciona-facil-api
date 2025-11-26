@@ -35,7 +35,7 @@ jobs:
         uses: azure/container-apps-deploy-action@v2
         with:
           appSourcePath: ${{ github.workspace }}/src/src
-          _dockerfilePathKey_: _dockerfilePath_
+          _dockerfilePathKey_: EstacionaFacil.Api/Dockerfile
           _targetLabelKey_: _targetLabel_
           registryUrl: estacionamentoapi.azurecr.io
           registryUsername: ${{ secrets.ESTACIONAFACILAPI_REGISTRY_USERNAME }}
@@ -45,6 +45,7 @@ jobs:
           imageToBuild: estacionamentoapi.azurecr.io/estaciona-facil-api:${{ github.sha }}
           _buildArgumentsKey_: |
             _buildArgumentsValues_
+
 
 
 
