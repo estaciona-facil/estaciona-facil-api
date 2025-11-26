@@ -10,7 +10,11 @@ namespace EstacionaFacil.Tests.Fixtures
     {
         public override Estacionamento EntidadeValida()
         {
-            return new Estacionamento(_faker.Random.Decimal(1, 100));
+            return new Estacionamento(
+                _faker.Person.FirstName, 
+                _faker.Random.Decimal(1, 100),
+                _faker.Random.Int(1, 15)
+            );
         }
 
         public Estacionamento EstacionamentoSemValorHora()
