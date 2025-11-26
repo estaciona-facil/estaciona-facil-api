@@ -23,6 +23,16 @@ builder.Services.ResolveDependencias(appSettings);
 var app = builder.Build();
 
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("Default", policy =>
+        policy.AllowAnyOrigin()
+              .AllowAnyHeader()
+              .AllowAnyMethod());
+});
+
+app.UseCors("Default");
+
 app.UseSwagger();
 app.UseSwaggerUI();
 
