@@ -34,7 +34,7 @@ namespace EstacionaFacil.Domain.Services
             return await AtualizarAsync(registro.RegistrarSaida());
         }
 
-        public async Task<Registro> ObterPelaPlacaAsync(string placa)
+        public async Task<Registro?> ObterPelaPlacaAsync(string placa)
         {
             var retorno = await _repository.BuscarAsync(
                 x => x.Veiculo != null
@@ -42,7 +42,7 @@ namespace EstacionaFacil.Domain.Services
                 , ["Veiculo"]
             );
 
-            return retorno.First();
+            return retorno.FirstOrDefault();
         }
 
 
