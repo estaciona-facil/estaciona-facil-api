@@ -4,6 +4,7 @@ using EstacionaFacil.Domain.Interfaces.Services;
 using EstacionaFacil.Domain.Services.Base;
 using EstacionaFacil.Domain.Utils;
 using EstacionaFacil.Domain.Validations;
+using System.Numerics;
 
 namespace EstacionaFacil.Domain.Services
 {
@@ -43,6 +44,15 @@ namespace EstacionaFacil.Domain.Services
             );
 
             return retorno.FirstOrDefault();
+        }
+
+        public async Task<IEnumerable<Registro>> ObterTodosVeiculosAsnyc(bool adicionarVeiculos)
+        {
+            var includes = new List<string>();
+            if (adicionarVeiculos) includes.Add("Veiculo");
+
+            var retorno = await _repository.BuscarAsync(x =>  x.Veiculo != null, includes.ToArray());
+            return retorno;
         }
 
 

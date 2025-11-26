@@ -11,6 +11,12 @@ namespace EstacionaFacil.Infra.Data.Context.Configurations
             builder.ToTable("Estacionamento");
             builder.HasKey(s => s.Id);
             builder.Property(s => s.MtrValorHora).IsRequired();
+            builder.Property(s => s.MinutosTolerancia);
+            builder.Property(s => s.MinutosTolerancia);
+
+            builder.HasOne(x => x.Endereco)
+               .WithMany()
+               .HasForeignKey(x => x.EnderecoId);
         }
     }
 }
