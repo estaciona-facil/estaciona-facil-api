@@ -40,7 +40,8 @@ jobs:
         with:
           push: true
           tags: ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.CONTAINER_APP_NAME }}:${{ github.sha }}
-          file: src/src/EstacionaFacil.Api/Dockerfile
+          context: src/
+          file: src/EstacionaFacil.Api/Dockerfile
 
 
       - name: Azure Login
