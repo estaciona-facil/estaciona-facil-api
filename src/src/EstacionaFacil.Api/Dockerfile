@@ -7,13 +7,13 @@ WORKDIR /app
 EXPOSE 8080
 EXPOSE 8081
 
-
 # Esta fase é usada para compilar o projeto de serviço
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["src/EstacionaFacil.Api/EstacionaFacil.Api.csproj", "src/EstacionaFacil.Api/"]
 COPY ["src/EstacionaFacil.Domain/EstacionaFacil.Domain.csproj", "src/EstacionaFacil.Domain/"]
+COPY ["src/EstacionaFacil.Infra.IoC/EstacionaFacil.Infra.IoC.csproj", "src/EstacionaFacil.Infra.IoC/"]
 COPY ["src/EstacionaFacil.Infra.CrossCutting/EstacionaFacil.Infra.CrossCutting.csproj", "src/EstacionaFacil.Infra.CrossCutting/"]
 COPY ["src/EstacionaFacil.Infra.Data/EstacionaFacil.Infra.Data.csproj", "src/EstacionaFacil.Infra.Data/"]
 RUN dotnet restore "./src/EstacionaFacil.Api/EstacionaFacil.Api.csproj"
