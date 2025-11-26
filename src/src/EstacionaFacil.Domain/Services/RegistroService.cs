@@ -40,18 +40,19 @@ namespace EstacionaFacil.Domain.Services
             var retorno = await _repository.BuscarAsync(
                 x => x.Veiculo != null
                     && x.Veiculo.Placa == placa
-                , ["Veiculo"]
+                , x => x.Veiculo
             );
 
             return retorno.FirstOrDefault();
         }
 
-        public async Task<IEnumerable<Registro>> ObterTodosVeiculosAsnyc(bool adicionarVeiculos)
+        public async Task<IEnumerable<Registro>> ObterTodosVeiculosEstacionadosAsnyc(bool adicionarVeiculos)
         {
-            var includes = new List<string>();
-            if (adicionarVeiculos) includes.Add("Veiculo");
-
-            var retorno = await _repository.BuscarAsync(x =>  x.Veiculo != null, includes.ToArray());
+            var retorno = await _repository.BuscarAsync(x =>  x.Veiculo != null, 
+                x => x.Veiculo,
+                x => x.Veiculo.Modelo,
+                x => x.Veiculo.Modelo.Marca
+            );
             return retorno;
         }
 

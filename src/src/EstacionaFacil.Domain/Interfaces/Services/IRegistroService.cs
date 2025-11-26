@@ -7,6 +7,6 @@ namespace EstacionaFacil.Domain.Interfaces.Services
     {
         Task<Registro> RegistrarEventoPorPlacaAsync(Guid estacionamentoId, string placa);
         Task<Registro?> ObterPelaPlacaAsync(string placa);
-        Task<IEnumerable<Registro>> ObterTodosVeiculosAsnyc(bool adicionarVeiculos);
+        Task<IEnumerable<Registro>> ObterTodosVeiculosEstacionadosAsnyc(bool adicionarVeiculos);
     }
 }

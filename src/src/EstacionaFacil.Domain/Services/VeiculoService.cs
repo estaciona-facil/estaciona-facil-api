@@ -21,7 +21,6 @@ namespace EstacionaFacil.Domain.Services
         public override Task<Veiculo> AtualizarAsync(Veiculo entidade)
         {
             entidade.AdicionarValidacaoEntidade(_negocioService, new VeiculoValidator());
-            _negocioService.ExecutarValidacao();
             return base.AtualizarAsync(entidade);
         }
     }

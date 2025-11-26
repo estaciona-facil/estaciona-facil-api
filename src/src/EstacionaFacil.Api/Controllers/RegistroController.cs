@@ -24,10 +24,10 @@ namespace EstacionaFacil.Api.Controllers
             return retorno;
         }
 
-        [HttpGet("veiculos")]
+        [HttpGet("veiculos-estacionados")]
         public async Task<IEnumerable<Registro>> Buscar([FromQuery] bool adicionarVeiculo)
         {
-            var retorno = await _service.ObterTodosVeiculosAsnyc(adicionarVeiculo);
+            var retorno = await _service.ObterTodosVeiculosEstacionadosAsnyc(adicionarVeiculo);
             return retorno;
         }
 

@@ -28,17 +28,18 @@ namespace EstacionaFacil.Infra.Data.Repositories.Base
             return await Entidades.Where(where).ToListAsync();
         }
 
-        public async Task<IEnumerable<T>> BuscarAsync(Expression<Func<T, bool>> where, string[] includes)
+        public async Task<IEnumerable<T>> BuscarAsync(
+            Expression<Func<T, bool>> predicate,
+            params Expression<Func<T, object>>[] includes)
         {
             IQueryable<T> query = Entidades;
 
             foreach (var include in includes)
             {
-                try { query = query.Include(include); }
-                catch (Exception) { }
+                query = query.Include(include);
             }
 
-            return await query.Where(where).ToListAsync();
+            return await query.Where(predicate).ToListAsync();
         }
 
         public async Task<IEnumerable<T>> ObterTodosAsync()

@@ -6,19 +6,19 @@ namespace EstacionaFacil.Api.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class EstacionamentoController : ControllerBase
+    public class EnderecoController : ControllerBase
     {
-        private IEstacionamentoService _service;
-        private readonly ILogger<EstacionamentoController> _logger;
+        private IEnderecoService _service;
+        private readonly ILogger<EnderecoController> _logger;
 
-        public EstacionamentoController(ILogger<EstacionamentoController> logger, IEstacionamentoService service)
+        public EnderecoController(ILogger<EnderecoController> logger, IEnderecoService service)
         {
             _logger = logger;
             _service = service;
         }
 
         [HttpGet]
-        public async Task<IEnumerable<Estacionamento>> ObterTodosAsnyc()
+        public async Task<IEnumerable<Endereco>> ObterTodosAsnyc()
         {
             var retorno = await _service.ObterTodosAsync();
             return retorno;
@@ -28,18 +28,18 @@ namespace EstacionaFacil.Api.Controllers
         public async Task<ActionResult<Registro>> ObterPorIdAsync(Guid id)
         {
             var retorno = await _service.ObterPorIdAsync(id);
-            if (retorno is null) return BadRequest("Estacionamento não encontrado!");
+            if (retorno is null) return BadRequest("Endereco não encontrado!");
             return Ok(retorno);
         }
 
         [HttpPost]
-        public async Task<Estacionamento> AdicionarAsync([FromBody] Estacionamento entidade)
+        public async Task<Endereco> AdicionarAsync([FromBody] Endereco entidade)
         {
             return await _service.AdicionarAsync(entidade);
         }
 
         [HttpPut]
-        public async Task<Estacionamento> AtualizarAsync([FromBody] Estacionamento entidade)
+        public async Task<Endereco> AtualizarAsync([FromBody] Endereco entidade)
         {
             return await _service.AtualizarAsync(entidade);
         }
